@@ -2,6 +2,7 @@
 ## ...to the Okta Chicklet Page
 
 ## Introduction
+![alt text](images/byob-demo.gif)
 
 ## Okta Org Setup
 1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**
