@@ -30,6 +30,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
 2. Run `npm install`
 3. Run `npm install @vue/cli -g`
 4. Create `src/.config.js` and edit it in with the values below:
+    * Note the `.` in front of the filename. This is simply for convention
 ```
 export default {
     oidc: {
@@ -40,7 +41,6 @@ export default {
     }
 };
 ```
-    * Note the `.` in front of the filename. This is simply for convention
 5. The following command compiles and hot-reloads for development environment
 `npm run serve`
 6. Open your browser to `http://localhost:8080` and login

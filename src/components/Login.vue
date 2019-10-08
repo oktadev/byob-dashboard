@@ -17,21 +17,21 @@ export default {
   mounted: function () {
     this.$nextTick(function () {
         const config = {
-        baseUrl: authConfig.oidc.issuer.split('oauth2')[0],
-        clientId: authConfig.oidc.client_id,
-        redirectUri: authConfig.oidc.redirect_uri,
-        authParams: {
-            responseType: ['id_token', 'token'],
-            issuer: authConfig.oidc.issuer,
-            scopes: authConfig.oidc.scope.split(' '),
-            display: 'page'
-        }
+          baseUrl: authConfig.oidc.issuer.split('oauth2')[0],
+          clientId: authConfig.oidc.client_id,
+          redirectUri: authConfig.oidc.redirect_uri,
+          authParams: {
+              responseType: ['id_token', 'token'],
+              issuer: authConfig.oidc.issuer,
+              scopes: authConfig.oidc.scope.split(' '),
+              display: 'page'
+          }
         }
         this.widget = new OktaSignIn(config)
         this.widget.renderEl(
             { el: '#okta-signin-container' },
             (res) => {
-                console.log(res)
+              console.log(res)
             },
             (err) => {throw err}
         )
