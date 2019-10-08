@@ -14,6 +14,7 @@ This project is built in Vue.js 3.11.0, and uses
 
 
 ## Okta Org Setup
+This application is represented by an OpenID Connect application in Okta, so we need to configure one:
 1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**
 2. Click **Next**, then enter an Application **Name**. Then:
    * Set Base URIs to `http://localhost:8080/` (it should already be set by default)
@@ -22,6 +23,7 @@ This project is built in Vue.js 3.11.0, and uses
 3. Click **Done** to redirect back to the *General* tab of your application.
 4. Make note of the **Client ID**, as it will be needed environment configuration. 
 5. Make sure that **Use PKCE (for public clients)** (underneath the Client Id) is selected
+6. Navigate to **Api** > **Trusted Origins** and add `http://localhost:8080` as a type = **CORS** entry.
 
 ## Local Installation
 1. Clone this repository and `cd` into the main directory
