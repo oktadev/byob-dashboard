@@ -36,7 +36,7 @@ Vue.use(Auth, {
   issuer: oktaAuthConfig.oidc.issuer,
   client_id: oktaAuthConfig.oidc.client_id,
   redirect_uri: oktaAuthConfig.oidc.redirect_uri,
-  scopes: oktaAuthConfig.oidc.scope,
+  scopes: oktaAuthConfig.oidc.scope.split(' '),
   pkce: true
 })
 

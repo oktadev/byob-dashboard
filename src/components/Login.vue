@@ -29,13 +29,21 @@ export default {
           }
         }
         this.widget = new OktaSignIn(config)
-        this.widget.renderEl(
-            { el: '#okta-signin-container' },
-            (res) => {
-              console.log(res)
-            },
-            (err) => {throw err}
-        )
+
+        this.widget.authClient.session.exists()
+        .then((exists)=> {
+          if (exists) {
+            this.$auth.loginRedirect("/", {})
+          } else {
+            this.widget.renderEl(
+                { el: '#okta-signin-container' },
+                (res) => {
+                  console.log(res)
+                },
+                (err) => {throw err}
+            )
+          }
+        })
     })
   },
   destroyed () {
