@@ -19,10 +19,10 @@
       <router-link
           tag='button' id="login-button"
           to="/login"
-          v-if="!authenticated"
+          v-if="!loginRedirect && !authenticated"
         >
         <v-btn text>Login</v-btn>
-      </router-link>    
+      </router-link>
       <router-link
           tag='button' id="logout-button"
           to="/"
@@ -42,10 +42,13 @@
 </template>
 
 <script>
+import oktaAuthConfig from '@/.config.js'
+
 export default {
   name: 'App',
   data () {
     return {
+      loginRedirect: false,
       authenticated: false
     }
   },
@@ -56,6 +59,7 @@ export default {
   },
   methods: {
     appInit() {
+      this.loginRedirect = oktaAuthConfig.loginRedirect
       this.isAuthenticated()
     },
     async isAuthenticated () {

@@ -7,6 +7,8 @@ import LoginComponent from '@/components/Login'
 
 Vue.use(Router)
 
+const guardHome = oktaAuthConfig.loginRedirect ? false : true
+
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -15,9 +17,7 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: {
-        requiresAuth: true
-      }
+      meta: {requiresAuth: true}
     },
     {
       path: '/login',
@@ -42,7 +42,11 @@ Vue.use(Auth, {
 
 const onAuthRequired = async (from, to, next) => {
   if (from.matched.some(record => record.meta.requiresAuth) && !(await Vue.prototype.$auth.isAuthenticated())) {
-    next({ path: '/login' })
+    if (oktaAuthConfig.loginRedirect) {
+      Vue.prototype.$auth.loginRedirect('/')
+    } else {
+      next({ path: '/login' })
+    }
   } else {
     next()
   }

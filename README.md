@@ -40,7 +40,7 @@ export default {
         redirect_uri: '/implicit/callback',
         scope: 'openid profile email',
     }
-};
+}
 ```
 5. The following command compiles and hot-reloads for development environment
 `npm run serve`
@@ -49,4 +49,19 @@ export default {
 ## Compile and minify for production
 ```
 npm run build
+```
+
+# Alternative Login Flow
+To see an example of logging in via redirect to the Okta hosted Signin page, add `loginRedirect` to the `.config.js` file.
+The resulting file should look like this:
+```
+export default {
+    oidc: {
+        client_id: {{Your Client ID from the "Okta Org Setup" setup}},
+        issuer: 'https://{{Your Okta Org Url}}/oauth2/default',
+        redirect_uri: '/implicit/callback',
+        scope: 'openid profile email',
+    },
+    loginRedirect: true
+}
 ```
