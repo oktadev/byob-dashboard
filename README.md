@@ -20,7 +20,8 @@ If you've ever considered building your own User HomePage (aka the "Chicklet Pag
 ## Local Installation
 1. Clone this repository and `cd` into the main directory
 2. Run `npm install`
-3. Create `src/.config.js` and edit it in with the values below:
+3. Run `npm install @vue/cli -g`
+4. Create `src/.config.js` and edit it in with the values below:
 ```
 export default {
     oidc: {
@@ -31,9 +32,9 @@ export default {
     }
 };
 ```
-4. The following command compiles and hot-reloads for development environment
+5. The following command compiles and hot-reloads for development environment
 `npm run serve`
-5. Open your browser to `http://localhost:8080` and login
+6. Open your browser to `http://localhost:8080` and login
 
 ## Compile and minify for production
 ```
