@@ -1,8 +1,9 @@
 # BYOB
-## **B**ring **Y**our **O**wn **B**rand...to the Okta Chicklet Page
+**B**ring **Y**our **O**wn **B**rand...to the Okta Chicklet Page
 
 ## Introduction
 ![alt text](images/byob-demo.gif)
+
 If you've ever considered building your own User HomePage (aka the "Chicklet Page") in order to have 100% control of the branding, this project shows you a simple example of such a page.
 
 
@@ -19,8 +20,7 @@ If you've ever considered building your own User HomePage (aka the "Chicklet Pag
 ## Local Installation
 1. Clone this repository and `cd` into the main directory
 2. Run `npm install`
-3. Run `npm install @vue/cli -g`
-4. Create `src/.config.js` and edit it in with the values below:
+3. Create `src/.config.js` and edit it in with the values below:
 ```
 export default {
     oidc: {
@@ -31,9 +31,9 @@ export default {
     }
 };
 ```
-5. The following command compiles and hot-reloads for development environment
+4. The following command compiles and hot-reloads for development environment
 `npm run serve`
-6. Open your browser to `http://localhost:8080` and login
+5. Open your browser to `http://localhost:8080` and login
 
 ## Compile and minify for production
 ```
