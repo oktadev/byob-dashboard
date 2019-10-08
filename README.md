@@ -52,7 +52,7 @@ npm run build
 ```
 
 # Alternative Login Flow
-To see an example of logging in via redirect to the Okta hosted Signin page, add `loginRedirect` to the `.config.js` file.
+To see an example of logging in via redirect to the Okta hosted Signin page *(instead of the Signin Widget)*, add `loginRedirect` to the `.config.js` file.
 The resulting file should look like this:
 ```
 export default {
