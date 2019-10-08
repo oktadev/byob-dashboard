@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app>
       <v-toolbar-title class="headline text-uppercase">
-        <v-icon size="30px" color="primary">mdi-home</v-icon>
+        <v-icon size="30px" color="primary">mdi-emoticon</v-icon>
         &nbsp;
         <span class="font-weight-light">Bring Your Own Brand</span>
       </v-toolbar-title>

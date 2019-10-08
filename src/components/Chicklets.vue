@@ -10,7 +10,7 @@
 <template>
     <v-container fluid grid-list-xl>
         <draggable 
-            class="d-flex flex-wrap pa-8 v-card v-sheet theme--light"
+            class="d-flex flex-wrap pa-12 v-card v-sheet theme--light"
             v-model="chicklets"
             @start="drag=true" @end="moveComplete"
             :move="moving"
@@ -56,9 +56,9 @@ export default {
     data() {
         return {
             org: false,
-            chickletWidth: "160",
+            chickletWidth: "170",
             chickletHeight: "80",
-            logoHeight: "40px",
+            logoHeight: "33px",
             homeTab: null,
             chicklets: [],
             whatsMoving: false

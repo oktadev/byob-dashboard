@@ -20,6 +20,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
    * Set Base URIs to `http://localhost:8080/` (it should already be set by default)
    * Leave the default setting `http://localhost:8080/implicit/callback` value in the list of *Redirect URIs*
    * Leave the default setting, Group assignments = **Everyone**
+   * Select **Authorization Code** and deselect the default **Implicit** checkbox
 3. Click **Done** to redirect back to the *General* tab of your application.
 4. Make note of the **Client ID**, as it will be needed environment configuration. 
 5. Make sure that **Use PKCE (for public clients)** (underneath the Client Id) is selected

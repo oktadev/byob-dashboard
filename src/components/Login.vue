@@ -21,7 +21,8 @@ export default {
           clientId: authConfig.oidc.client_id,
           redirectUri: authConfig.oidc.redirect_uri,
           authParams: {
-              responseType: ['id_token', 'token'],
+              responseType: 'code',
+              grantType: 'authorization_code',
               issuer: authConfig.oidc.issuer,
               scopes: authConfig.oidc.scope.split(' '),
               display: 'page'
