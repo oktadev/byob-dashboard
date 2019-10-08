@@ -1,28 +1,73 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-app-bar app>
+      <v-toolbar-title class="headline text-uppercase">
+        <v-icon size="30px" color="primary">mdi-home</v-icon>
+        &nbsp;
+        <span class="font-weight-light">Bring Your Own Brand</span>
+      </v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <router-link
+          tag='button' id='home-button'
+          v-if="authenticated"
+          to="/"
+        >
+        <v-btn text>Home</v-btn>
+      </router-link>
+      <router-link
+          tag='button' id="login-button"
+          to="/login"
+          v-if="!authenticated"
+        >
+        <v-btn text>Login</v-btn>
+      </router-link>    
+      <router-link
+          tag='button' id="logout-button"
+          to="/"
+          v-if="authenticated"
+          v-on:click.native="logout()"
+        >
+        <v-btn text>Logout</v-btn>
+      </router-link>
+
+
+    </v-app-bar>
+
+    <v-content>    
+      <router-view/>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  name: 'App',
+  data () {
+    return {
+      authenticated: false
+    }
+  },
+  created () { this.appInit() },
+  watch: {
+    // Everytime the route changes, check for auth status
+    '$route': 'isAuthenticated'
+  },
+  methods: {
+    appInit() {
+      this.isAuthenticated()
+    },
+    async isAuthenticated () {
+      if (this.$auth) {
+        this.authenticated = await this.$auth.isAuthenticated()
+      }
+    },
+    async logout () {
+      await this.$auth.logout()
+      await this.isAuthenticated()
+      window.location.href="/"
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
