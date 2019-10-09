@@ -6,10 +6,10 @@
 
 If you've ever considered building your own User HomePage (aka the "Chicklet Page") – in order to have 100% control of the branding – and want some sample code to get started, you've found the right repo!
 
-This project is built in Vue.js 3.11.0, and uses
-* [Vuetify 2.x](https://vuetifyjs.com/en/)
-* [Vuedraggable](https://github.com/SortableJS/Vue.Draggable)
-* [Okta Vue.js SDK](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue)
+This project is built in Vue.js and uses
+* [Vuetify 2.x](https://vuetifyjs.com/en/) Material Design Component Framework
+* [Vuedraggable](https://github.com/SortableJS/Vue.Draggable) Vue drag-and-drop component based on Sortable.js
+* [Okta Vue.js SDK](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue) 
 * [Okta Sign-in Widget 3.x](https://github.com/okta/okta-signin-widget)
 
 
