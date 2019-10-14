@@ -65,3 +65,6 @@ export default {
     loginRedirect: true
 }
 ```
+
+# Overriding the Icons uploaded into Okta
+Sometimes it is useful to override the App icons that were uploaded into Okta with higher resolution images. To do this, edit the `/src/assets/icons.js` file with a list of objects containing the appId and the associated logo URL. 

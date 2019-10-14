@@ -51,6 +51,7 @@
 import axios from 'axios'
 import config from '@/.config'
 import draggable from 'vuedraggable'
+import icons from '@/assets/icons'
 
 export default {
     data() {
@@ -90,6 +91,20 @@ export default {
             if (appLinks.length > 1) {
                 appLinks.sort((a, b) => (a.sortOrder > b.sortOrder) ? 1: -1)
             }
+
+            const overrideIcons = icons.icons
+            overrideIcons.forEach((obj)=>{
+                let i = appLinks.findIndex((link)=>{
+                    return link.appInstanceId == obj.id
+                })
+                if (i>=0) {
+                    if (obj.url && obj.url.length > 0)
+                        appLinks[i].logoUrl = obj.url
+                    if (obj.label && obj.label.length>0)
+                        appLinks[i].label = obj.label
+                }
+            })         
+
             this.chicklets = appLinks
         },
         buttonClick(href) {
