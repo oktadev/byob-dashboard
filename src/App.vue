@@ -10,29 +10,27 @@
       <v-spacer></v-spacer>
 
       <router-link
-          tag='button' id='home-button'
-          v-if="authenticated"
-          to="/"
-        >
-        <v-btn text>Home</v-btn>
-      </router-link>
-      <router-link
           tag='button' id="login-button"
           to="/login"
           v-if="!loginRedirect && !authenticated"
         >
         <v-btn text>Login</v-btn>
       </router-link>
-      <router-link
-          tag='button' id="logout-button"
-          to="/"
-          v-if="authenticated"
-          v-on:click.native="logout()"
-        >
-        <v-btn text>Logout</v-btn>
-      </router-link>
+      <div v-if="authenticated">
+        <router-link
+            tag='button' id='home-button'
+            v-if="authenticated"
+            to="/"
+          >
+          <v-btn text>
+            <v-icon left dark>mdi-home</v-icon>
+            Home
+          </v-btn>
+        </router-link>
 
-
+        <ProfileButton>
+        </ProfileButton>
+      </div>
     </v-app-bar>
 
     <v-content>    
@@ -43,6 +41,7 @@
 
 <script>
 import oktaAuthConfig from '@/.config.js'
+import ProfileButton from '@/components/ProfileButton'
 
 export default {
   name: 'App',
@@ -52,13 +51,16 @@ export default {
       authenticated: false
     }
   },
+  components: {
+      ProfileButton
+  },
   created () { this.appInit() },
   watch: {
     // Everytime the route changes, check for auth status
     '$route': 'isAuthenticated'
   },
   methods: {
-    appInit() {
+    async appInit() {
       this.loginRedirect = oktaAuthConfig.loginRedirect
       this.isAuthenticated()
     },
@@ -66,11 +68,6 @@ export default {
       if (this.$auth) {
         this.authenticated = await this.$auth.isAuthenticated()
       }
-    },
-    async logout () {
-      await this.$auth.logout()
-      await this.isAuthenticated()
-      window.location.href="/"
     }
   }
 }

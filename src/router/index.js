@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/views/Home.vue'
 import Auth from '@okta/okta-vue'
-import oktaAuthConfig from '@/.config.js'
+import Home from '@/views/Home.vue'
+import Settings from '@/views/Settings.vue'
 import LoginComponent from '@/components/Login'
+import oktaAuthConfig from '@/.config.js'
 
 Vue.use(Router)
-
-const guardHome = oktaAuthConfig.loginRedirect ? false : true
 
 const router = new Router({
   mode: 'history',
@@ -26,7 +25,22 @@ const router = new Router({
     {
       path: '/implicit/callback',
       component: Auth.handleCallback()
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: Settings,
+      props: true,
+      meta: {requiresAuth: true}
+    },
+    {
+      path: '/settings/change-password',
+      name: 'change-password',
+      component: Settings,
+      props: true,
+      meta: {requiresAuth: true}
     }
+
   ]
 })
 
