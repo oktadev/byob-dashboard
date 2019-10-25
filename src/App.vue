@@ -28,7 +28,9 @@
           </v-btn>
         </router-link>
 
-        <ProfileButton>
+        <ProfileButton
+          v-bind:userinfo="userinfo"
+          >
         </ProfileButton>
       </div>
     </v-app-bar>
@@ -48,7 +50,9 @@ export default {
   data () {
     return {
       loginRedirect: false,
-      authenticated: false
+      authenticated: false,
+      userinfo: {},
+      key: 0
     }
   },
   components: {
@@ -67,6 +71,7 @@ export default {
     async isAuthenticated () {
       if (this.$auth) {
         this.authenticated = await this.$auth.isAuthenticated()
+        this.userinfo = await this.$auth.getUser()
       }
     }
   }

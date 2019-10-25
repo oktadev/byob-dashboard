@@ -1,20 +1,9 @@
 <template>
-    <v-col cols="3" class="mx-8">
+    <v-col cols="4" class="mx-8">
         <v-form
             ref="form"
             v-model="valid"
             >
-            <v-row>
-                <v-spacer/>
-                <v-btn small text
-                    @click="save"
-                    :disabled="!valid"
-                    :color="valid ? 'green' : null"
-                    >
-                    Change Password
-                </v-btn>
-            </v-row>
-
             <v-text-field
                 v-model="currentPassword"
                 label="Current Password"
@@ -44,8 +33,18 @@
                 :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showConfirmPassword = !showConfirmPassword"
                 >
-            </v-text-field>                        
+            </v-text-field>
+            <v-row>
+                <v-btn small outlined
+                    @click="save"
+                    :disabled="!valid"
+                    :color="valid ? 'green' : null"
+                    >
+                    Change Password
+                </v-btn>
+            </v-row>                             
         </v-form>
+        
         <v-overlay :value="overlay">
             <v-progress-circular
                 indeterminate
@@ -54,8 +53,12 @@
             </v-progress-circular>
             <v-btn
                 v-if="saved"
+                @click="overlay=false"
+                :color="error? 'red': ''"
+                :outlined="error"
                 >
-                Password Successfully Updated
+                {{overlayMessage}}&nbsp;
+                <v-icon v-if="error">mdi-close</v-icon>
             </v-btn>
         </v-overlay>
     </v-col>        
@@ -69,7 +72,6 @@ export default {
     name: 'change-password',
     data () {
         return {
-            account: undefined,
             valid: true,
             currentPassword: undefined,
             newPassword: undefined,
@@ -86,48 +88,39 @@ export default {
             ],
             processing: false,
             overlay: false,
-            saved: false
+            saved: false,
+            overlayMessage: undefined,
+            error: false
         }
-    },
-    computed: {
-        claims() {
-            let claims = []
-            if (this.account) {
-                for (let [key, value] of Object.entries(this.account)) {
-                    if (!this.reservedFields.includes(key)) {
-                        claims.push({
-                            key: key,
-                            value: value,
-                            editable: this.editableFields.includes(key)
-                        })
-                    }
-                }
-            }
-            return claims
-        }
-    },
-    async created() {
-        this.account = await this.$auth.getUser()
     },
     methods: {
         async save() {
-            this.overlay=true
-            const userId = this.account.sub
-            const url = config.proxyApi + '/api/v1/users/' + userId + '/credentials/change_password'
+            this.saved = false
+            this.error = false
+            const url = config.proxyApi + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/credentials/change_password'
             const payload = {
                 oldPassword: {value: this.currentPassword},
                 newPassword: {value: this.newPassword}
             }
             const accessToken = await this.$auth.getAccessToken()
-            const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
-
-            if (res.status == 200) {
-                this.$refs.form.reset()
+            this.overlayMessage = undefined
+            this.overlay=true
+            try {
+                const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
+                if (res.status == 200) {
+                    this.overlayMessage = 'Password Updated'
+                    this.saved = true
+                    window.setTimeout(()=>{
+                        this.$refs.form.reset()
+                        this.overlay=false
+                    }, 600)
+                }
+            } catch(err) {
+                if (err.response.data.errorCauses)
+                    this.overlayMessage = err.response.data.errorCauses[0].errorSummary
+                this.error = true
                 this.saved = true
             }
-            window.setTimeout(()=>{
-                this.overlay=false
-            }, 900)
         }
     }    
 }

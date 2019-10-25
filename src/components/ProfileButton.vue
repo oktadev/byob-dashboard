@@ -13,23 +13,23 @@
             {{accountName}}
         </v-btn>
         </template>
-        <v-card>
+        <v-card v-if="userinfo">
             <v-list>
                 <v-list-item>
                 <v-list-item-avatar 
-                    v-if="account.profileUrl"
+                    v-if="userinfo.profile"
                     >
-                    <img :src="account.profileUrl" alt="profile-pic">
+                    <img :src="userinfo.profile" alt="profile-pic">
                 </v-list-item-avatar>
                 <v-list-item-avatar
-                    v-if="!account.profileUrl"
+                    v-if="!userinfo.profile"
                     color="indigo" size="48"
                     >
                     <span class="white--text headline">{{initials}}</span>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                    <v-list-item-title>{{account.name}}</v-list-item-title>
-                    <v-list-item-subtitle>{{account.preferred_username}}</v-list-item-subtitle>
+                    <v-list-item-title>{{userinfo.name}}</v-list-item-title>
+                    <v-list-item-subtitle>{{userinfo.preferred_username}}</v-list-item-subtitle>
                 </v-list-item-content>
 
                 </v-list-item>
@@ -64,22 +64,20 @@
 export default {
     name: 'profile-button',
     data () {
-        return {
-            account: {}
-        }
+        return {}
+    },
+    props: {
+        userinfo: Object
     },
     computed: {
         accountName() {
-            return this.account.given_name
+            return this.userinfo ? this.userinfo.given_name : ''
         },
         initials() {
-            if (!this.account.given_name)
+            if (!this.userinfo || !this.userinfo.given_name)
                 return ''
-            return this.account.given_name.substring(0,1) + this.account.family_name.substring(0,1)
+            return this.userinfo.given_name.substring(0,1) + this.userinfo.family_name.substring(0,1)
         }
-    },
-    async created() {
-        this.account = await this.$auth.getUser()
     },
     methods: {
         async logout () {
@@ -90,16 +88,17 @@ export default {
             this.$router.push({
                 name: 'settings',
                 params: {
-                    showProfile: true
+                    userinfo: this.userinfo,
+                    focusTab: 0
                 }
             })
         },
         changePassword() {
             this.$router.push({
-                name: 'change-password',
+                name: 'settings',
                 params: {
-                    showProfile: true,
-                    changePassword: true
+                    userinfo: this.userinfo,
+                    focusTab: 1
                 }
             })
         }

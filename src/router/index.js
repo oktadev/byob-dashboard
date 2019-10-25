@@ -32,15 +32,7 @@ const router = new Router({
       component: Settings,
       props: true,
       meta: {requiresAuth: true}
-    },
-    {
-      path: '/settings/change-password',
-      name: 'change-password',
-      component: Settings,
-      props: true,
-      meta: {requiresAuth: true}
     }
-
   ]
 })
 

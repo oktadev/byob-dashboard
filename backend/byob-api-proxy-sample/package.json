@@ -1,0 +1,14 @@
+{
+  "name": "byob-api-proxy-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "zip": "mkdir dist && rm -f ./dist/byob-api-proxy-sample.zip ; zip ./dist/byob-api-proxy-sample.zip -r *.js *.json node_modules/"
+  },
+  "author": "zeekhoo-okta",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0"
+  }
+}
