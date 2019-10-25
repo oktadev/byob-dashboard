@@ -21,6 +21,7 @@ We use the library [Okta JWT Verifier for Node.js](https://github.com/okta/okta-
 5. Click **Create Function** (This will automatically create an AMI role. But you can also select an existing one with the correct permissions if you have one)
 6. In the **Code entry type** field, select **Upload a .zip file** and upload the previously generated zip file
 7. Add **Environment variables**:
+
 | NAME | VALUE |
 | ---- | ----- |
 |AUD|`api://default` *(or whichever value you configured as "Audience" in your AuthorizationServer)*|
