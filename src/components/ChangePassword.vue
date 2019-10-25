@@ -116,8 +116,12 @@ export default {
                     }, 600)
                 }
             } catch(err) {
-                if (err.response.data.errorCauses)
+                try {
                     this.overlayMessage = err.response.data.errorCauses[0].errorSummary
+                } catch(e) {
+                    //lazily handle unexpected responses
+                    this.overlayMessage = 'invalid request'
+                }
                 this.error = true
                 this.saved = true
             }

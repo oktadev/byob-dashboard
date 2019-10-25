@@ -10,7 +10,7 @@ We use the library [Okta JWT Verifier for Node.js](https://github.com/okta/okta-
 
 ## Step 1. Build
 1. Clone this repository and `cd` into the main directory
-2. `npm install`
+2. `npm install --production`
 3. `npm run zip` will create a source bundle and place it in the `\dist` folder. You will need this zip file in the next steps, below.
 
 ## Step 2. Create Lambda function using the AWS Lambda Console/UI

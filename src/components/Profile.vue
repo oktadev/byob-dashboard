@@ -156,8 +156,12 @@ export default {
                     this.$root.$children[0].userinfo = updatedAccount
                 }
             } catch(err) {
-                if (err.response.data.errorCauses)
+                try {
                     this.overlayMessage = err.response.data.errorCauses[0].errorSummary
+                } catch(e) {
+                    // lazily catch unrecognized responses
+                    this.overlayMessage = 'Unable to process request. Please re-try'
+                }
                 window.setTimeout(()=>{}, 900)
             }
             this.saved = true
