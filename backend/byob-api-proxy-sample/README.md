@@ -1,5 +1,5 @@
 # Proxy API calls to Okta
-The Single Page App (SPA) needs to call Okta APIs (*For Example, to update the users' own profile/password or configure factors, see [Manage Okta resources by API](https://developer.okta.com/docs/reference/#manage-okta-resources) for more info*). However, the Okta API endpoints are protected by API keys ([SSWS key](https://developer.okta.com/docs/reference/api-overview/#authentication)) that cannot be stored on the client side. The SPA has an **access_token** that can authenticate its *own apis*. In order to securely call the Okta endpoints, the SPA calls its own API (protected by the SPA's access_token), and the SPA's API (for example, a Lambda, which can store secrets) then proxies api calls to Okta (securely) with the SSWS key.
+The Single Page App (SPA) needs to call Okta APIs (*For Example, to update the users' own profile/password or configure factors, see [Manage Okta resources by API](https://developer.okta.com/docs/reference/#manage-okta-resources) for more info*). However, the Okta API endpoints are protected by API keys ([SSWS key](https://developer.okta.com/docs/reference/api-overview/#authentication)) that cannot be stored on the client side. The SPA has an **access_token** that can authenticate its *own apis*. In order to securely call the Okta endpoints, the SPA calls its own API (protected by the SPA's access_token), and the SPA's API (a Lambda, *which can store secrets*) then proxies api calls to Okta (securely) with the SSWS key.
 
 # Deployment
 
@@ -48,6 +48,7 @@ The Single Page App (SPA) needs to call Okta APIs (*For Example, to update the u
 * Click **Ok** when prompted about CORS
 
 ## Step 4. Add Lambda Authorizer to the proxy:
+First create the [Lambda Authorizer](../byob-api-proxy-lambda-authorizer-sample) function. Once that's done, we can configure the API Gateway to use it as a custom authorizer:
 1. Select **Authorizers** in the left navigation pane
 2. Click **Create New Authorizer**, then configure with these values:
 * Lambda Function = *name of the lambda function from [byob-api-proxy-lambda-authorizer-sample](../byob-api-proxy-lambda-authorizer-sample)*
