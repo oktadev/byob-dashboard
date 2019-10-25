@@ -68,3 +68,7 @@ export default {
 
 # Overriding the Icons uploaded into Okta
 Sometimes it is useful to override the App icons that were uploaded into Okta with higher resolution images. To do this, edit the `/src/assets/icons.js` file with a list of objects containing the appId and the associated logo URL. 
+
+
+# SPA APIs
+This sample also provides examples on how to update the users' profile/password and calls sample API (built using Lambda and Amazon API Gateway) endpoints. Follow this [link](/backend) to see more.
