@@ -88,7 +88,6 @@ export default {
             this.$router.push({
                 name: 'settings',
                 params: {
-                    userinfo: this.userinfo,
                     focusTab: 0
                 }
             })
@@ -97,7 +96,6 @@ export default {
             this.$router.push({
                 name: 'settings',
                 params: {
-                    userinfo: this.userinfo,
                     focusTab: 1
                 }
             })

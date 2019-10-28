@@ -45,8 +45,8 @@
         </v-col>
         <v-col cols="2">
             <v-avatar color="indigo" size="240">
-                <span v-if="!userinfo.profile" class="white--text headline">{{initials}}</span>
-                <img v-if="userinfo.profile" :src="profilePic" alt="profile-pic">
+                <span v-if="!appUserInfo.profile" class="white--text headline">{{initials}}</span>
+                <img v-if="appUserInfo.profile" :src="profilePic" alt="profile-pic">
             </v-avatar>
         </v-col>
     </v-row>
@@ -71,17 +71,15 @@ export default {
             saved: true,
             overlay: false,
             overlayMessage: undefined,
-            claims: []
+            claims: [],
+            appUserInfo: this.$root.$children[0].userinfo
         }
-    },
-    props: {
-        userinfo: Object
     },
     computed: {
         initials() {
-            if (!this.userinfo || !this.userinfo.given_name)
+            if (!this.appUserInfo || !this.appUserInfo.given_name)
                 return ''
-            return this.userinfo.given_name.substring(0,1) + this.userinfo.family_name.substring(0,1)
+            return this.appUserInfo.given_name.substring(0,1) + this.appUserInfo.family_name.substring(0,1)
         },
         profilePic() {
             for (let claim of this.claims) {
@@ -96,8 +94,8 @@ export default {
     methods: {
         init() {
             let claims = []
-            if (this.userinfo) {
-                for (let [key, value] of Object.entries(this.userinfo)) {
+            if (this.appUserInfo) {
+                for (let [key, value] of Object.entries(this.appUserInfo)) {
                     if (!this.invisibleFields.includes(key)) {
                         claims.push({
                             key: key,
@@ -138,22 +136,29 @@ export default {
                 profile: profile
             }
             const accessToken = await this.$auth.getAccessToken()
-            const url = config.proxyApi + '/api/v1/users/' + this.userinfo.sub
+            const url = config.proxyApi + '/api/v1/users/' + this.appUserInfo.sub
             try {
                 const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
                 if (res.status == 200) {
                     this.overlayMessage = 'Profile Updated'
 
+                    // // must make sure to update the userinfo object's attributes
+                    // let updatedAccount = this.$root.$children[0].userinfo
+                    // this.claims.forEach((claim)=>{
+                    //     updatedAccount[claim.key] = claim.value
+                    // })
+                    // // update the "name" claim, in case first/last names have changed
+                    // updatedAccount.name = updatedAccount.given_name + ' ' + updatedAccount.family_name
+                    // this.claims[this.claims.findIndex((claim)=>{return claim.key=='name'})].value = updatedAccount.name
+
                     // must make sure to update the userinfo object's attributes
-                    let updatedAccount = this.$root.$children[0].userinfo
                     this.claims.forEach((claim)=>{
-                        updatedAccount[claim.key] = claim.value
+                        this.appUserInfo[claim.key] = claim.value
                     })
                     // update the "name" claim, in case first/last names have changed
-                    updatedAccount.name = updatedAccount.given_name + ' ' + updatedAccount.family_name
-                    this.claims[this.claims.findIndex((claim)=>{return claim.key=='name'})].value = updatedAccount.name
-
-                    this.$root.$children[0].userinfo = updatedAccount
+                    this.appUserInfo.name = this.appUserInfo.given_name + ' ' + this.appUserInfo.family_name
+                    this.claims[this.claims.findIndex((claim)=>{return claim.key=='name'})].value = this.appUserInfo.name
+                    this.$root.$children[0].userinfo = this.appUserInfo
                 }
             } catch(err) {
                 try {

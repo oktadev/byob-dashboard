@@ -5,9 +5,7 @@
             <v-tab key="profile">Profile</v-tab>
             <v-tab key="security">Security</v-tab>
             <v-tab-item key="profile">
-                <Profile
-                    :userinfo="userinfo"
-                    >
+                <Profile>
                 </Profile>
             </v-tab-item>
             <v-tab-item key="security">
@@ -34,8 +32,7 @@ export default {
         }
     },
     props: {
-        focusTab: Number,
-        userinfo: Object
+        focusTab: Number
     },
     created() {
     },

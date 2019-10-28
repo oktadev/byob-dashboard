@@ -17,16 +17,16 @@
         <v-btn text>Login</v-btn>
       </router-link>
       <div v-if="authenticated">
-        <router-link
+        <!-- <router-link
             tag='button' id='home-button'
             v-if="authenticated"
             to="/"
-          >
-          <v-btn text>
+          > -->
+          <v-btn text @click="home">
             <v-icon left dark>mdi-home</v-icon>
             Home
           </v-btn>
-        </router-link>
+        <!-- </router-link> -->
 
         <ProfileButton
           v-bind:userinfo="userinfo"
@@ -51,28 +51,38 @@ export default {
     return {
       loginRedirect: false,
       authenticated: false,
-      userinfo: {},
+      userinfo: undefined,
       key: 0
     }
   },
   components: {
       ProfileButton
   },
-  created () { this.appInit() },
+  created () {
+    this.appInit()
+  },
   watch: {
     // Everytime the route changes, check for auth status
     '$route': 'isAuthenticated'
   },
   methods: {
-    async appInit() {
-      this.loginRedirect = oktaAuthConfig.loginRedirect
+    appInit() {
+      if (oktaAuthConfig.loginRedirect)
+        this.loginRedirect = oktaAuthConfig.loginRedirect 
       this.isAuthenticated()
     },
     async isAuthenticated () {
-      if (this.$auth) {
-        this.authenticated = await this.$auth.isAuthenticated()
+      this.authenticated = await this.$auth.isAuthenticated()
+
+      if (!this.userinfo) {
+        // hacky-hack. Since we're directly updating userinfo. Do not fetch new data because there may be a race-condition and data from Okta could lag the UI
         this.userinfo = await this.$auth.getUser()
       }
+    },
+    home() {
+      this.$router.push({
+          name: 'home',
+      })
     }
   }
 }

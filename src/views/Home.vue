@@ -11,16 +11,6 @@
     name: 'home',
     components: {
       Chicklets
-    },
-    data () {
-        return {
-            showApps: false,
-            apps: null
-        }
-    },
-    created() {
-    },
-    methods: {
     }
   }
 </script>
