@@ -71,4 +71,4 @@ Sometimes it is useful to override the App icons that were uploaded into Okta wi
 
 
 # SPA APIs
-This sample also provides examples on how to update the users' profile/password and calls sample API (built using Lambda and Amazon API Gateway) endpoints. Follow this [link](/backend) to see more.
+This sample provides sample implementation user management (profile/password update) using Lambda and Amazon API Gateway. Navigate to the  [api folder](/api) to see more.
