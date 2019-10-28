@@ -1,13 +1,20 @@
 # Proxy API calls to Okta
 The Single Page App (SPA) would need to call Okta APIs (*For Example, to update the users' own profile/password or configure factors, see [Manage Okta resources by API](https://developer.okta.com/docs/reference/#manage-okta-resources) for more info*) but the Okta API endpoints are protected by API keys ([SSWS key](https://developer.okta.com/docs/reference/api-overview/#authentication)) that cannot be stored on the client side. However, the SPA has an **access_token** that can authenticate its *own apis*. So in order to securely call Okta endpoints, the SPA would call its own API (protected by the access_token), and then the API (a Lambda, *which can store secrets*) proxies calls to Okta with the SSWS key.
 
+![alt text](../images/byob-demo-crud.gif)
+
+
 # Deployment
 
 ## Step 1. Create 2 lambdas
-Create the 2 lambdas with provided samples [byob-api-proxy-lambda-authorizer-sample](/api/byob-api-proxy-lambda-authorizer-sample) and [byob-api-proxy-sample](/api/byob-api-proxy-sample). These lambdas will be used in the next steps.
+![alt text](../images/apigateway.png)
+
+Our sample project calls [POST /api/v1/users/${userId}](https://developer.okta.com/docs/reference/api/users/#update-profile) to update the user profile, and [POST /api/v1/users/${userId}/credentials/change_password](https://developer.okta.com/docs/reference/api/users/#change-password) to change password. We use a Amzaon API Gateway with a single lambda integration to proxy calls to the above Okta endpoints. To protect the API Gateway endpoint, we use a custom Lambda authorizer that validates access_token from the SPA app.
+
+Create provided samples [byob-api-proxy-lambda-authorizer-sample](/api/byob-api-proxy-lambda-authorizer-sample) and [byob-api-proxy-sample](/api/byob-api-proxy-sample). These lambdas will be used in the next steps.
 
 ## Step 2. Create a proxy endpoint (to the Okta API) using Amazon API Gateway:
-Create the [byob-api-proxy-sample](/api/byob-api-proxy-sample) lambda function, as instructed in Step 1, above
+First, you'd need to create the [byob-api-proxy-sample](/api/byob-api-proxy-sample) lambda function, as instructed in Step 1 above.
 
 1. From the Amazon API Gateway Console/UI, click **Create API**
 2. Accept all defaults, and provide a name for **API name**

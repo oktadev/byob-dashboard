@@ -57,7 +57,7 @@ export default {
     data() {
         return {
             org: false,
-            chickletWidth: "170",
+            chickletWidth: "160",
             chickletHeight: "80",
             logoHeight: "33px",
             homeTab: null,
