@@ -23,4 +23,4 @@
 
 
 # Special processing
-Though we are mostly proxying the api calls, additional handling can be added. We provide an example stripReadOnlyAttributes() function that reads the user [schema](https://developer.okta.com/docs/reference/api/schemas/#get-user-schema) to decide which profile attributes are read vs. read-write by the user. The function strips out and read-only attributes to make sure users don't overwrite admin protected information.
+Though we are mostly proxying the api calls, additional handling can be added. We've implemented an example stripReadOnlyAttributes() function that reads the user [schema](https://developer.okta.com/docs/reference/api/schemas/#get-user-schema) to decide which profile attributes are "read" vs. "read-write" by the user. The function strips out read-only attributes to make sure users don't inadvertently overwrite read-only information.
