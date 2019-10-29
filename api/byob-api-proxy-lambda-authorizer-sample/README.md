@@ -10,7 +10,7 @@ A lambda authorizer provides custom authorization for API Endpoints exposed thro
 ```
 
 ## Dependencies
-We use the library [Okta JWT Verifier for Node.js](https://github.com/okta/okta-oidc-js/tree/master/packages/jwt-verifier) validate the token. And upon validation generate the [aws-auth-policy](https://www.npmjs.com/package/aws-auth-policy) for Amazon API Gateway.
+We use the library [Okta JWT Verifier for Node.js](https://github.com/okta/okta-oidc-js/tree/master/packages/jwt-verifier) to validate the token. And upon validation generate the [aws-auth-policy](https://www.npmjs.com/package/aws-auth-policy) for Amazon API Gateway.
 
 # Deployment
 

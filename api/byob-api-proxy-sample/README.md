@@ -20,3 +20,7 @@
 | ---- | ----- |
 |OKTA_API_KEY|[An *SSWS* key](https://developer.okta.com/docs/reference/api-overview/#authentication) to authenticate Okta API calls|
 |OKTA_ORG|Your *"okta org url"* (e.g. `https://acme.okta.com`)|
+
+
+# Special processing
+Though we are mostly proxying the api calls, additional handling can be added. We provide an example stripReadOnlyAttributes() function that reads the user [schema](https://developer.okta.com/docs/reference/api/schemas/#get-user-schema) to decide which profile attributes are read vs. read-write by the user. The function strips out and read-only attributes to make sure users don't overwrite admin protected information.

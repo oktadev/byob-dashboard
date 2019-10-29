@@ -142,15 +142,6 @@ export default {
                 if (res.status == 200) {
                     this.overlayMessage = 'Profile Updated'
 
-                    // // must make sure to update the userinfo object's attributes
-                    // let updatedAccount = this.$root.$children[0].userinfo
-                    // this.claims.forEach((claim)=>{
-                    //     updatedAccount[claim.key] = claim.value
-                    // })
-                    // // update the "name" claim, in case first/last names have changed
-                    // updatedAccount.name = updatedAccount.given_name + ' ' + updatedAccount.family_name
-                    // this.claims[this.claims.findIndex((claim)=>{return claim.key=='name'})].value = updatedAccount.name
-
                     // must make sure to update the userinfo object's attributes
                     this.claims.forEach((claim)=>{
                         this.appUserInfo[claim.key] = claim.value
