@@ -15,9 +15,9 @@ We use the library [Okta JWT Verifier for Node.js](https://github.com/okta/okta-
 # Deployment
 
 ## Step 1. Build
-1. Clone this repository and `cd` into `backend/byob-api-proxy-lambda-authorizer-sample/`
+1. Clone this repository and `cd` into `/api/byob-api-proxy-lambda-authorizer-sample/`
 2. `rm -rf node_modules/ && npm install --production`
-3. `npm run zip` will create a source bundle and place it in the `\dist` folder. You will need this zip file in the next steps, below.
+3. `npm run zip` will create a source bundle and place it in the `/dist` folder. You will need this zip file in the next steps, below.
 
 ## Step 2. Create Lambda function using the AWS Lambda Console/UI
 1. Click **Create Function**
