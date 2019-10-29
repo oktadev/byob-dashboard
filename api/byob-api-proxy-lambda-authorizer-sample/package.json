@@ -14,11 +14,11 @@
     "aws-auth-policy": "^0.1.0"
   },
   "devDependencies": {
-    "lambda-local": "^1.1.0",
-    "grunt": "^1.0.1",
-    "grunt-aws": "^0.6.1",
+    "grunt": "^1.0.4",
+    "grunt-aws": "^0.7.1",
     "grunt-aws-lambda": "^0.13.0",
-    "grunt-env": "^0.4.4",
+    "grunt-env": "^1.0.1",
+    "lambda-local": "^1.6.3",
     "load-grunt-tasks": "^3.4.0"
   }
 }
