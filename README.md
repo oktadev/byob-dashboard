@@ -35,7 +35,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
 ```
 export default {
     oidc: {
-        client_id: {{Your Client ID from the "Okta Org Setup" setup}},
+        client_id: '{{Your Client ID from the "Okta Org Setup" setup}}',
         issuer: 'https://{{Your Okta Org Url}}/oauth2/default',
         redirect_uri: '/implicit/callback',
         scope: 'openid profile email',
