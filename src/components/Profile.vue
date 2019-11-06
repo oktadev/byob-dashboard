@@ -61,8 +61,13 @@ export default {
     data () {
         return {
             valid: true,
-            invisibleFields: ['updated_at', 'email_verified', 'sub', 'zoneinfo'],
-            editableFields: [
+            invisibleFields: [  // list of claims in the idToken that we don't want to display
+                'updated_at',
+                'email_verified',
+                'sub',
+                'zoneinfo'
+            ],
+            editableFields: [  // list of cliamsin the idToken that are editable; Provide a custom label for each 
                 {name: 'profile', label: 'Profile Pic Url', profileField: 'profileUrl'}, 
                 {name: 'email', label: 'Email', profileField: 'email'}, 
                 {name: 'given_name', label: 'First Name', profileField: 'firstName'}, 
@@ -94,10 +99,13 @@ export default {
     methods: {
         async init() {
             let claims = []
+            // A browser refresh here could prevent userinfo to be loaded in from App. 
+            // But we can easily fetch it using getUser()
             if (!this.appUserInfo)
                 this.appUserInfo = await this.$auth.getUser()
 
             for (let [key, value] of Object.entries(this.appUserInfo)) {
+                // Don't show the "invisible" fields
                 if (!this.invisibleFields.includes(key)) {
                     claims.push({
                         key: key,
