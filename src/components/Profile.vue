@@ -45,8 +45,8 @@
         </v-col>
         <v-col cols="2">
             <v-avatar color="indigo" size="240">
-                <span v-if="!appUserInfo.profile" class="white--text headline">{{initials}}</span>
-                <img v-if="appUserInfo.profile" :src="profilePic" alt="profile-pic">
+                <span v-if="!appUserInfo || !appUserInfo.profile" class="white--text headline">{{initials}}</span>
+                <img v-if="appUserInfo && appUserInfo.profile" :src="profilePic" alt="profile-pic">
             </v-avatar>
         </v-col>
     </v-row>
@@ -92,17 +92,18 @@ export default {
         this.init()
     },
     methods: {
-        init() {
+        async init() {
             let claims = []
-            if (this.appUserInfo) {
-                for (let [key, value] of Object.entries(this.appUserInfo)) {
-                    if (!this.invisibleFields.includes(key)) {
-                        claims.push({
-                            key: key,
-                            value: value,
-                            editable: this.isEditableField(key)
-                        })
-                    }
+            if (!this.appUserInfo)
+                this.appUserInfo = await this.$auth.getUser()
+
+            for (let [key, value] of Object.entries(this.appUserInfo)) {
+                if (!this.invisibleFields.includes(key)) {
+                    claims.push({
+                        key: key,
+                        value: value,
+                        editable: this.isEditableField(key)
+                    })
                 }
             }
             this.claims = claims     

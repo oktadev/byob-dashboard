@@ -63,7 +63,7 @@ Create the [byob-api-proxy-lambda-authorizer-sample](/api/byob-api-proxy-lambda-
 ```
 export default {
     oidc: {
-        client_id: {{Your Client ID from the "Okta Org Setup" setup}},
+        client_id: '{{Your Client ID from the "Okta Org Setup" setup}}',
         issuer: 'https://{{Your Okta Org Url}}/oauth2/default',
         redirect_uri: '/implicit/callback',
         scope: 'openid profile email',

@@ -33,10 +33,6 @@ export default {
     },
     props: {
         focusTab: Number
-    },
-    created() {
-    },
-    methods: {
-    }    
+    }
 }
 </script>
