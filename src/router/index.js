@@ -5,6 +5,7 @@ import Home from '@/views/Home.vue'
 import Settings from '@/views/Settings.vue'
 import LoginComponent from '@/components/Login'
 import oktaAuthConfig from '@/.config.js'
+import o4o from '@/components/o4o'
 
 Vue.use(Router)
 
@@ -25,6 +26,10 @@ const router = new Router({
     {
       path: '/implicit/callback',
       component: Auth.handleCallback()
+    },
+    {
+      path: '/o4o/callback',
+      component: o4o
     },
     {
       path: '/settings',

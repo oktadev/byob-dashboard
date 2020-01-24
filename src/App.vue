@@ -32,8 +32,21 @@
           v-bind:userinfo="userinfo"
           >
         </ProfileButton>
+        <v-btn text outlined
+            @click="o4o"
+            >
+            O4o
+        </v-btn>
       </div>
     </v-app-bar>
+    <div>
+        <iframe
+            width="100%"
+            height="0"
+            :src="o4oAuthorizeUrl"
+            frameborder="0"
+        ></iframe>
+    </div>
 
     <v-content>    
       <router-view/>
@@ -52,7 +65,9 @@ export default {
       loginRedirect: false,
       authenticated: false,
       userinfo: undefined,
-      key: 0
+      key: 0,
+      o4oAuthorizeUrl: undefined,
+      o4oToken: undefined
     }
   },
   components: {
@@ -83,6 +98,11 @@ export default {
       this.$router.push({
           name: 'home',
       })
+    },
+    o4o() {
+        let url = oktaAuthConfig.oidc.issuer.split('oauth2')[0] + '/oauth2/v1/authorize?client_id=' + oktaAuthConfig.oidc.client_id
+            + '&&response_type=token&response_mode=fragment&scope=okta.users.manage.self&redirect_uri=http://localhost:8080/o4o/callback&state=foo&nonce=foo'
+        this.o4oAuthorizeUrl = url;
     }
   }
 }
