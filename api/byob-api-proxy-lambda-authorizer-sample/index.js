@@ -3,8 +3,7 @@ const AuthPolicy = require('aws-auth-policy')
 const OktaJwtVerifier = require('@okta/jwt-verifier')
 
 const oktaJwtVerifier = new OktaJwtVerifier({
-    issuer: process.env.ISSUER,
-    clientId: process.env.CLIENT_ID
+    issuer: process.env.ISSUER
 });
 
 exports.handler = function(event, context) {
@@ -29,10 +28,10 @@ exports.handler = function(event, context) {
         const uid = jwt.claims.uid;
 
         // allow update own profile
-        policy.allowMethod(AuthPolicy.HttpVerb.POST, '/api/v1/users/' + uid);
+        policy.allowMethod(AuthPolicy.HttpVerb.POST, '/dashboard/api/v1/users/' + uid);
 
         // allow change own password
-        policy.allowMethod(AuthPolicy.HttpVerb.POST, '/api/v1/users/' + uid + '/credentials/*');
+        policy.allowMethod(AuthPolicy.HttpVerb.POST, '/dashboard/api/v1/users/' + uid + '/credentials/*');
 
         var builtPolicy = policy.build();
         return context.succeed(builtPolicy);

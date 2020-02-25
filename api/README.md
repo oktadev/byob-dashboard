@@ -20,21 +20,26 @@ First, you'd need to create the [byob-api-proxy-sample](/api/byob-api-proxy-samp
 2. Accept all defaults, and provide a name for **API name**
 3. Click **Create API**
 4. On the next screen, click **Actions** > **Create Resource** and provide following values:
-    * Resource Name = **api**
-    * Resource Path = **/api**
+    * Resource Name = **dashboard**
+    * Resource Path = **/dashboard**
     * Enable API Gateway CORS = **N**
     * Click **Create Resource**
-5. Create another resource under resource path **/api**. (Click **Actions** > **Create Resource** again):
+5. Create another resource under resource path **/dashboard**. (Click **Actions** > **Create Resource** again):
+    * Resource Name = **api**
+    * Resource Path = **/api** 
+    * Enable API Gateway CORS = **N**
+    * Click **Create Resource**
+6. Create another resource under resource path **/api**. (Click **Actions** > **Create Resource** again):
     * Resource Name = **v1**
     * Resource Path = **/v1** 
     * Enable API Gateway CORS = **N**
     * Click **Create Resource**
-6. Create a *proxy path* resource under resource path **/api/v1**. (Click **Actions** > **Create Resource** one more time):
+7. Create a *proxy path* resource under resource path **/api/v1**. (Click **Actions** > **Create Resource** one more time):
     * Select **Configure as proxy resource** checkbox
     * Accept all the defaults *(resulting in Resource Name = **proxy**, Resource Path = **/api/v1/{proxy+}**)*
     * Set *Enable API Gateway CORS* = **Y**
     * Click **Create Resource**
-7. In the next screen
+8. In the next screen
     * Select *Integration type* = **Lambda Function Proxy**
     * Lambda Function = *name of the lambda function from [byob-api-proxy-sample](/api/byob-api-proxy-sample)*
     * Click **Save**
