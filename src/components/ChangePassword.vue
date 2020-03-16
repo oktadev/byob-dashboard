@@ -84,7 +84,7 @@ export default {
             ],
             passwordRules: [
                 v => !!v || 'New Password is required',
-                v => !(this.newPassword && this.confirmNewPassword && this.newPassword != this.confirmNewPassword) || "Passwords don't match"
+                v2 => !!v2 || !(this.newPassword && this.confirmNewPassword && this.newPassword != this.confirmNewPassword) || "Passwords don't match"
             ],
             processing: false,
             overlay: false,
