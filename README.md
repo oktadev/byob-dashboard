@@ -35,7 +35,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
 1. Clone this repository and `cd` into the main directory
 2. Run `npm install`
 3. Run `npm install @vue/cli -g`
-4. Create env file `.env.development.local` and edit it in with the values below:
+4. Create env file `.env.development.local` in the root directory (There is an existing `.env` file. Do not touch that file, add this new file in addition to it). Edit it in with the values below:
 ```
 VUE_APP_CLIENT_ID={{Your Client ID from the "Okta Org Setup" setup}}
 VUE_APP_ISSUER=https://{{Your Okta Org Url}}/oauth2/default
