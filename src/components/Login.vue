@@ -10,21 +10,20 @@
 <script>
 import OktaSignIn from '@okta/okta-signin-widget'
 import '@okta/okta-signin-widget/dist/css/okta-sign-in.min.css'
-import authConfig from '@/.config.js'
 
 export default {
   name: 'Login',
   mounted: function () {
     this.$nextTick(function () {
         const config = {
-          baseUrl: authConfig.oidc.issuer.split('oauth2')[0],
-          clientId: authConfig.oidc.client_id,
-          redirectUri: authConfig.oidc.redirect_uri,
+          baseUrl: this.$config.oidc.issuer.split('oauth2')[0],
+          clientId: this.$config.oidc.client_id,
+          redirectUri: this.$config.oidc.redirect_uri,
           authParams: {
               responseType: 'code',
               grantType: 'authorization_code',
-              issuer: authConfig.oidc.issuer,
-              scopes: authConfig.oidc.scope.split(' '),
+              issuer: this.$config.oidc.issuer,
+              scopes: this.$config.oidc.scope.split(' '),
               display: 'page'
           }
         }

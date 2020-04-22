@@ -64,15 +64,9 @@ Create the [byob-api-proxy-lambda-authorizer-sample](/api/byob-api-proxy-lambda-
 1. Look for (and click) the button **Actions** > **Deploy API**
     * When prompted for **Stage** provide a value and click **Deploy**
 2. After Deploy, You will immediately be taken to the **Stage Editor** screen. Copy the **Invoke URL** value
-3. Add proxyApi={Invoke URL} to the `.config.js` config file. The file should look like:
+3. Add the {{Invoke URL}} api endpoint to your `.env.development.local` config file. The file should look like:
 ```
-export default {
-    oidc: {
-        client_id: '{{Your Client ID from the "Okta Org Setup" setup}}',
-        issuer: 'https://{{Your Okta Org Url}}/oauth2/default',
-        redirect_uri: '/implicit/callback',
-        scope: 'openid profile email',
-    },
-    proxyApi: '{{Invoke URL}}'
-}
+VUE_APP_CLIENT_ID={{Your Client ID from the "Okta Org Setup" setup}}
+VUE_APP_ISSUER=https://{{Your Okta Org Url}}/oauth2/default
+VUE_APP_API={{Invoke URL}}
 ```

@@ -4,7 +4,6 @@ export default {
       client_id: process.env.VUE_APP_CLIENT_ID,
       issuer: process.env.VUE_APP_ISSUER,
       redirect_uri: process.env.VUE_APP_REDIRECT_URI,
-      o4o_redirect_uri: process.env.VUE_APP_O4O_REDIRECT_URI,
       scope: process.env.VUE_APP_SCOPES
     },
     api: process.env.VUE_APP_API,

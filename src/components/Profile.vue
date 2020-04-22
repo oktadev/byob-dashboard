@@ -54,7 +54,6 @@
 
 <script>
 import axios from 'axios'
-import config from '@/.config.js'
 
 export default {
     name: 'profile',
@@ -145,7 +144,7 @@ export default {
                 profile: profile
             }
             const accessToken = await this.$auth.getAccessToken()
-            const url = config.proxyApi + '/api/v1/users/' + this.appUserInfo.sub
+            const url = this.$config.api + '/api/v1/users/' + this.appUserInfo.sub
             try {
                 const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
                 if (res.status == 200) {

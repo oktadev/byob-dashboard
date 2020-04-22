@@ -4,8 +4,7 @@ import Auth from '@okta/okta-vue'
 import Home from '@/views/Home.vue'
 import Settings from '@/views/Settings.vue'
 import LoginComponent from '@/components/Login'
-import oktaAuthConfig from '@/.config.js'
-import o4o from '@/components/o4o'
+import config from '@/.config'
 
 Vue.use(Router)
 
@@ -28,10 +27,6 @@ const router = new Router({
       component: Auth.handleCallback()
     },
     {
-      path: '/o4o/callback',
-      component: o4o
-    },
-    {
       path: '/settings',
       name: 'settings',
       component: Settings,
@@ -41,19 +36,19 @@ const router = new Router({
   ]
 })
 
-oktaAuthConfig.oidc.redirect_uri = window.location.protocol + '//' + window.location.host + oktaAuthConfig.oidc.redirect_uri
+config.oidc.redirect_uri = window.location.protocol + '//' + window.location.host + config.oidc.redirect_uri
 
 Vue.use(Auth, {
-  issuer: oktaAuthConfig.oidc.issuer,
-  client_id: oktaAuthConfig.oidc.client_id,
-  redirect_uri: oktaAuthConfig.oidc.redirect_uri,
-  scopes: oktaAuthConfig.oidc.scope.split(' '),
+  issuer: config.oidc.issuer,
+  client_id: config.oidc.client_id,
+  redirect_uri: config.oidc.redirect_uri,
+  scopes: config.oidc.scope.split(' '),
   pkce: true
 })
 
 const onAuthRequired = async (from, to, next) => {
   if (from.matched.some(record => record.meta.requiresAuth) && !(await Vue.prototype.$auth.isAuthenticated())) {
-    if (oktaAuthConfig.loginRedirect) {
+    if (config.loginRedirect) {
       Vue.prototype.$auth.loginRedirect('/')
     } else {
       next({ path: '/login' })

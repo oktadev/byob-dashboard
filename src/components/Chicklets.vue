@@ -49,7 +49,6 @@
 
 <script>
 import axios from 'axios'
-import config from '@/.config'
 import draggable from 'vuedraggable'
 import icons from '@/assets/icons'
 
@@ -69,7 +68,7 @@ export default {
         draggable
     },
     async created() {
-        const issuer = config.oidc.issuer
+        const issuer = this.$config.oidc.issuer
         this.org = issuer.split('/oauth2')[0]
         await this.getTabs()
         this.getAppLinks()

@@ -66,7 +66,6 @@
 
 <script>
 import axios from 'axios'
-import config from '@/.config.js'
 
 export default {
     name: 'change-password',
@@ -97,7 +96,7 @@ export default {
         async save() {
             this.saved = false
             this.error = false
-            const url = config.proxyApi + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/credentials/change_password'
+            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/credentials/change_password'
             const payload = {
                 oldPassword: {value: this.currentPassword},
                 newPassword: {value: this.newPassword}

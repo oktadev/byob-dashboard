@@ -32,22 +32,8 @@
           v-bind:userinfo="userinfo"
           >
         </ProfileButton>
-        <v-btn text outlined
-            @click="o4o"
-            >
-            O4o
-        </v-btn>
       </div>
     </v-app-bar>
-    <div>
-        <iframe
-            width="100%"
-            height="0"
-            :src="o4oAuthorizeUrl"
-            frameborder="0"
-        ></iframe>
-    </div>
-
     <v-content>    
       <router-view/>
     </v-content>
@@ -55,7 +41,6 @@
 </template>
 
 <script>
-import oktaAuthConfig from '@/.config.js'
 import ProfileButton from '@/components/ProfileButton'
 
 export default {
@@ -65,9 +50,7 @@ export default {
       loginRedirect: false,
       authenticated: false,
       userinfo: undefined,
-      key: 0,
-      o4oAuthorizeUrl: undefined,
-      o4oToken: undefined
+      key: 0
     }
   },
   components: {
@@ -82,8 +65,8 @@ export default {
   },
   methods: {
     appInit() {
-      if (oktaAuthConfig.loginRedirect)
-        this.loginRedirect = oktaAuthConfig.loginRedirect 
+      if (this.$config.oidc.redirect_uri)
+        this.loginRedirect = this.$config.oidc.redirect_uri
       this.isAuthenticated()
     },
     async isAuthenticated () {
@@ -98,11 +81,6 @@ export default {
       this.$router.push({
           name: 'home',
       })
-    },
-    o4o() {
-        let url = oktaAuthConfig.oidc.issuer.split('oauth2')[0] + '/oauth2/v1/authorize?client_id=' + oktaAuthConfig.oidc.client_id
-            + '&&response_type=token&response_mode=fragment&scope=okta.users.manage.self&redirect_uri=http://localhost:8080/o4o/callback&state=foo&nonce=foo'
-        this.o4oAuthorizeUrl = url;
     }
   }
 }
