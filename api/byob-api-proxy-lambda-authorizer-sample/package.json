@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/lambda-local --timeout 300 -l index.js -h handler -e test/event.json",
     "zip": "mkdir dist && rm -f ./dist/byob-lambda-authorizer.zip ; zip ./dist/byob-lambda-authorizer.zip -r *.js *.json node_modules/"
   },
   "author": "zeekhoo-okta",
@@ -12,13 +11,5 @@
   "dependencies": {
     "@okta/jwt-verifier": "^1.0.0",
     "aws-auth-policy": "^0.1.0"
-  },
-  "devDependencies": {
-    "grunt": "^1.0.4",
-    "grunt-aws": "^0.7.1",
-    "grunt-aws-lambda": "^0.13.0",
-    "grunt-env": "^1.0.1",
-    "lambda-local": "^1.6.3",
-    "load-grunt-tasks": "^3.4.0"
   }
 }
