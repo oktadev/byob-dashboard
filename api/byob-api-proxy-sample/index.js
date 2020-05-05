@@ -19,12 +19,11 @@ exports.handler = async function(event, context, callback) {
         let profile = requestBody.profile
         await stripReadOnlyAttributes(orgUrl, apiKey, profile)
     }
-
     try {
         let res = await axios({
             method: event.httpMethod,
             url: requestString,
-            data: {requestBody},
+            data: requestBody,
             headers: {Authorization: 'SSWS ' + apiKey}});
         response.statusCode = res.status;
         response.body = JSON.stringify(res.data);

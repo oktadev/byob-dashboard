@@ -11,6 +11,8 @@
             <v-tab-item key="security">
                 <ChangePassword>
                 </ChangePassword>
+                <Factors>
+                </Factors>
             </v-tab-item>
         </v-tabs>
     </v-container>
@@ -19,12 +21,14 @@
 <script>
 import Profile from '@/components/Profile'
 import ChangePassword from '@/components/ChangePassword'
+import Factors from '@/components/Factors'
 
 export default {
     name: 'settings',
     components: {
         Profile,
-        ChangePassword
+        ChangePassword,
+        Factors
     },
     data () {
         return {
