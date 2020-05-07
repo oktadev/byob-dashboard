@@ -1,6 +1,7 @@
 <template>
     <div>
         <template v-if="catalog.googleAuthenticator">
+            <Verify ref="verify"></Verify>
             <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
             <SMS ref="sms"></SMS>
             <SecurityQuestion ref="securityQuestion"></SecurityQuestion>
@@ -13,10 +14,12 @@ import axios from 'axios'
 import GoogleAuthenticator from '@/components/GoogleAuthenticator'
 import SMS from '@/components/SMS'
 import SecurityQuestion from '@/components/SecurityQuestion'
+import Verify from '@/components/Verify'
 
 export default {
     name: 'factors',
     components:{
+        Verify,
         GoogleAuthenticator,
         SMS,
         SecurityQuestion
@@ -26,12 +29,14 @@ export default {
             factors:{
                 googleAuthenticator: undefined,
                 sms: undefined,
-                securityQuestion: undefined
+                securityQuestion: undefined,
+                verify: undefined
             },
             catalog:{
                 googleAuthenticator: undefined,
                 sms: undefined,
-                securityQuestion: undefined
+                securityQuestion: undefined,
+                verify: undefined
             },
             processing: false,
             overlay: false,
@@ -60,6 +65,14 @@ export default {
                 const catalogRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
                 var catalogFactors = catalogRes.data
                 for(var i=0; i<catalogFactors.length; i++){
+                    //handle verify
+                    if(catalogFactors[i].factorType == Verify.factorType && catalogFactors[i].provider == Verify.provider){
+                        this.catalog.verify = catalogFactors[i]
+                        if(this.$refs.verify){
+                            this.$refs.verify.updateCatalog()
+                        }
+                        continue
+                    }
                     //handle google factor
                     if(catalogFactors[i].factorType == GoogleAuthenticator.factorType && catalogFactors[i].provider == GoogleAuthenticator.provider){
                         this.catalog.googleAuthenticator = catalogFactors[i]
@@ -109,6 +122,12 @@ export default {
                 const enrolledRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
                 var factors = enrolledRes.data
                 for(var i=0; i<factors.length; i++){
+                    //handle google factor
+                    if(factors[i].factorType == Verify.factorType && factors[i].provider == Verify.provider){
+                        this.factors.verify = factors[i]
+                        this.$refs.verify.updateFactors()
+                        continue
+                    }
                     //handle google factor
                     if(factors[i].factorType == GoogleAuthenticator.factorType && factors[i].provider == GoogleAuthenticator.provider){
                         this.factors.googleAuthenticator = factors[i]
