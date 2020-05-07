@@ -86,6 +86,7 @@ export default {
         updateFactor(){
             if(this.$parent.factors && this.$parent.factors.googleAuthenticator){
                 this.factorId = this.$parent.factors.googleAuthenticator.id
+                this.status = this.$parent.factors.googleAuthenticator.status
             }
         },
         async enroll() {

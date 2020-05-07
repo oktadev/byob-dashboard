@@ -60,7 +60,7 @@ export default {
     data () {
         return {
             factorType: "token:software:totp",
-            provider: "GOOGLE",
+            provider: "OKTA",
             factorId: undefined,
             enrollment: undefined,
             status: undefined,
@@ -99,7 +99,6 @@ export default {
             try {
                 const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
                 if (res.status == 200) {
-                    this.overlayMessage = 'Google Authenticator enrolled, please activate'
                     window.setTimeout(()=>{
                         this.overlay=false
                     }, 600)
