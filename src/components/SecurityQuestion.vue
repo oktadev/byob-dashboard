@@ -1,8 +1,8 @@
 <template>
     <v-col cols="4" class="mx-8">
-        <h2>SMS</h2>
+        <h2>Security Question</h2>
         <div v-if="status == 'ACTIVE'">
-            You have an enrolled for SMS authentication with {{phoneNumber}}.
+            You have an enrolled for security question authentication.
             <v-form>
                 <v-btn small outlined @click="reset">
                     Remove
@@ -11,18 +11,39 @@
         </div>
         <div v-else>
             <div v-if="status == 'NOT_SETUP'">
-                Available for enrollment
-                <v-form ref="enrollform">
-                    <v-text-field
-                            v-model="phoneNumber"
-                            label="Phone Number"
+                <div v-if="questions">
+                    <v-form ref="questionform">
+                        Please select and answer a challenge question.
+                        <v-select
+                            :items="questions"
+                            label="Question"
+                            v-model="question"
+                            item-text="questionText"
+                            item-value="question"
+                            outlined
+                        ></v-select>
+                        <v-text-field
+                            v-model="answer"
+                            label="Answer"
                             required
                             >
                         </v-text-field>
-                    <v-btn small outlined @click="enroll">
-                        Begin
-                    </v-btn>
-                </v-form>
+                        <v-btn small outlined @click="completeEnroll">
+                            Submit
+                        </v-btn>
+                        <v-btn small outlined @click="cancel">
+                            Cancel
+                        </v-btn>
+                    </v-form>
+                </div>
+                <div v-else>
+                    Available for enrollment
+                    <v-form ref="enrollform">
+                        <v-btn small outlined @click="enroll">
+                            Begin
+                        </v-btn>
+                    </v-form>
+                </div>
             </div>
             <div v-else>
                 <div v-if="status == 'MFA_ENROLL_ACTIVATE'">
@@ -56,7 +77,7 @@
 import axios from 'axios'
 
 export default {
-    factorType: "sms",
+    factorType: "question",
     provider: "OKTA",
     name: 'factors',
     data () {
@@ -64,14 +85,15 @@ export default {
             overlay: false,
             overlayMessage: undefined,
 
-            factorType: "sms",
+            factorType: "question",
             provider: "OKTA",
             factorId: undefined,
             enrollment: undefined,
             status: undefined,
 
-            phoneNumber: undefined,
-            activationCode: undefined,
+            questions:undefined,
+            question: undefined,
+            answer:undefined
         }
     },    
     created(){
@@ -80,32 +102,23 @@ export default {
     },
     methods: {
         updateCatalog(){
-            if(this.$parent.catalog && this.$parent.catalog.sms){
-                this.enrollment = this.$parent.catalog.sms.enrollment
-                this.status = this.$parent.catalog.sms.status
+            if(this.$parent.catalog && this.$parent.catalog.securityQuestion){
+                this.enrollment = this.$parent.catalog.securityQuestion.enrollment
+                this.status = this.$parent.catalog.securityQuestion.status
             }
         },
         updateFactor(){
-            if(this.$parent.factors && this.$parent.factors.sms){
-                this.factorId = this.$parent.factors.sms.id
-                this.phoneNumber = this.$parent.factors.sms.profile.phoneNumber
+            if(this.$parent.factors && this.$parent.factors.securityQuestion){
+                this.factorId = this.$parent.factors.securityQuestion.id
             }
         },
         async enroll() {
-            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors'
-            const payload = {
-                factorType: this.factorType,
-                provider: this.provider ,
-                profile: {phoneNumber: this.phoneNumber}
-            }
+            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors/questions'
             const accessToken = await this.$auth.getAccessToken()
             try {
-                const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
+                const res = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
                 if (res.status == 200) {
-                    this.status = res.data.status
-                    this.factorId = res.data.id
-                    this.$refs.enrollform.reset()
-                    this.phoneNumber = res.data.profile.phoneNumber
+                    this.questions = res.data
                 }
             } catch(err) {
                 this.overlay=true
@@ -120,35 +133,42 @@ export default {
                 }, 1000)
             }
         },
-        async cancel() {
 
-        },
-        async resend() {
-
-        },
-        async activate() {
-            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors/'+this.factorId+'/lifecycle/activate'
+        async completeEnroll(){
+            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors'
             const payload = {
-                passCode: this.activationCode
+                factorType: this.factorType,
+                provider: this.provider ,
+                profile: {
+                    question: this.question,
+                    answer: this.answer
+                    }
             }
             const accessToken = await this.$auth.getAccessToken()
             try {
                 const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
-                this.status = res.data.status
-                this.factorid = res.data.id
-                this.$refs.activationform.reset()
+                if (res.status == 200) {
+                    this.status = res.data.status
+                    this.factorId = res.data.id
+                    this.$refs.questionform.reset()
+                }
             } catch(err) {
                 this.overlay=true
                 try {
                     this.overlayMessage = err.response.data.errorCauses[0].errorSummary
                 } catch(e) {
-                    // lazily catch unrecognized responses
-                    this.overlayMessage = 'Unable to process request. Please re-try'
+                    //lazily handle unexpected responses
+                    this.overlayMessage = 'invalid request'
                 }
                 window.setTimeout(()=>{
                     this.overlay=false
                 }, 1000)
             }
+            this.$parent.updateCatalog()
+            this.$parent.updateFactors() 
+        },
+        async cancel() {
+            this.questions = undefined
         },
         async reset() {
             const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors/'+this.factorId

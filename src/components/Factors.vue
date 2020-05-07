@@ -3,6 +3,7 @@
         <template v-if="catalog.googleAuthenticator">
             <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
             <SMS ref="sms"></SMS>
+            <SecurityQuestion ref="securityQuestion"></SecurityQuestion>
         </template>
     </div>
 </template>
@@ -11,22 +12,26 @@
 import axios from 'axios'
 import GoogleAuthenticator from '@/components/GoogleAuthenticator'
 import SMS from '@/components/SMS'
+import SecurityQuestion from '@/components/SecurityQuestion'
 
 export default {
     name: 'factors',
     components:{
         GoogleAuthenticator,
-        SMS
+        SMS,
+        SecurityQuestion
     },
     data () {
         return {
             factors:{
                 googleAuthenticator: undefined,
-                sms: undefined
+                sms: undefined,
+                securityQuestion: undefined
             },
             catalog:{
                 googleAuthenticator: undefined,
-                sms: undefined
+                sms: undefined,
+                securityQuestion: undefined
             },
             processing: false,
             overlay: false,
@@ -71,6 +76,14 @@ export default {
                         }
                         continue;                        
                     }
+                    //handle security question
+                    if(catalogFactors[i].factorType == SecurityQuestion.factorType && catalogFactors[i].provider == SecurityQuestion.provider){
+                        this.catalog.securityQuestion = catalogFactors[i] 
+                        if(this.$refs.securityQuestion){
+                            this.$refs.securityQuestion.updateCatalog()
+                        }
+                        continue;                        
+                    }
                 }
             }
             catch(err) {
@@ -107,6 +120,14 @@ export default {
                         this.factors.sms = factors[i]
                         this.$refs.sms.updateFactor()
                         continue
+                    }
+                    //handle security question
+                    if(factors[i].factorType == SecurityQuestion.factorType && factors[i].provider == SecurityQuestion.provider){
+                        this.factors.securityQuestion = factors[i] 
+                        if(this.$refs.securityQuestion){
+                            this.$refs.securityQuestion.updateFactor()
+                        }
+                        continue;                        
                     }
                 }
             } catch(err) {
