@@ -34,6 +34,8 @@ exports.handler = function(event, context) {
         //allow factor lifecycle operations
         policy.allowMethod(AuthPolicy.HttpVerb.POST, '/api/v1/users/' + uid + '/factors/**');
         policy.allowMethod(AuthPolicy.HttpVerb.DELETE, '/api/v1/users/' + uid + '/factors/*');
+        //retrieve security question list
+        policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/users/' + uid + '/factors/questions');
         
         var builtPolicy = policy.build();
         return context.succeed(builtPolicy);
