@@ -1,27 +1,32 @@
 <template>
-    <v-col cols="4" class="mx-8">
+    <div>
         <template v-if="catalog.googleAuthenticator">
-            <GoogleAuthenticator></GoogleAuthenticator>
+            <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
+            <SMS ref="sms"></SMS>
         </template>
-    </v-col>        
+    </div>
 </template>
 
 <script>
 import axios from 'axios'
 import GoogleAuthenticator from '@/components/GoogleAuthenticator'
+import SMS from '@/components/SMS'
 
 export default {
     name: 'factors',
     components:{
-        GoogleAuthenticator
+        GoogleAuthenticator,
+        SMS
     },
     data () {
         return {
             factors:{
-                googleAuthenticator: undefined
+                googleAuthenticator: undefined,
+                sms: undefined
             },
             catalog:{
-                googleAuthenticator: undefined
+                googleAuthenticator: undefined,
+                sms: undefined
             },
             processing: false,
             overlay: false,
@@ -35,10 +40,11 @@ export default {
     },
     methods: {
         async init() {
-            this.setCatalog()
-            this.setfactors()
+            this.updateCatalog()
+            this.updateFactors()  
         },
-        async setCatalog(){
+        //Retrieve the factors which a user is eligable to enroll
+        async updateCatalog(){
             this.error = false
             const accessToken = await this.$auth.getAccessToken()
             var user = await this.$auth.getUser()
@@ -52,6 +58,18 @@ export default {
                     //handle google factor
                     if(catalogFactors[i].factorType == GoogleAuthenticator.factorType && catalogFactors[i].provider == GoogleAuthenticator.provider){
                         this.catalog.googleAuthenticator = catalogFactors[i]
+                        if(this.$refs.googleAuthenticator){
+                            this.$refs.googleAuthenticator.updateCatalog()
+                        }
+                        continue
+                    }
+                    //handle SMS factor
+                    if(catalogFactors[i].factorType == SMS.factorType && catalogFactors[i].provider == SMS.provider){
+                        this.catalog.sms = catalogFactors[i] 
+                        if(this.$refs.sms){
+                            this.$refs.sms.updateCatalog()
+                        }
+                        continue;                        
                     }
                 }
             }
@@ -66,7 +84,8 @@ export default {
                 this.saved = true
             }   
         },
-        async setfactors(){
+        //Retrieve the factors which the user has presently enrolled
+        async updateFactors(){
             this.error = false
             const accessToken = await this.$auth.getAccessToken()
             var user = await this.$auth.getUser()
@@ -76,10 +95,18 @@ export default {
                 var url = this.$config.api + '/api/v1/users/' + user.sub + '/factors'
                 const enrolledRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
                 var factors = enrolledRes.data
-                for(var ii=0; ii<factors.length; ii++){
+                for(var i=0; i<factors.length; i++){
                     //handle google factor
-                    if(factors[ii].factorType == GoogleAuthenticator.factorType && factors[ii].provider == GoogleAuthenticator.provider){
-                        this.factors.googleAuthenticator = factors[ii]
+                    if(factors[i].factorType == GoogleAuthenticator.factorType && factors[i].provider == GoogleAuthenticator.provider){
+                        this.factors.googleAuthenticator = factors[i]
+                        this.$refs.googleAuthenticator.updateFactors()
+                        continue
+                    }
+                    //handle SMS factor
+                    if(factors[i].factorType == SMS.factorType && factors[i].provider == SMS.provider){
+                        this.factors.sms = factors[i]
+                        this.$refs.sms.updateFactor()
+                        continue
                     }
                 }
             } catch(err) {
@@ -92,37 +119,6 @@ export default {
                 this.error = true
                 this.saved = true
             } 
-        },
-        async save() {
-            this.saved = false
-            this.error = false
-            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/credentials/change_password'
-            const payload = {
-                oldPassword: {value: this.currentPassword},
-                newPassword: {value: this.newPassword}
-            }
-            const accessToken = await this.$auth.getAccessToken()
-            this.overlayMessage = undefined
-            this.overlay=true
-            try {
-                const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
-                if (res.status == 200) {
-                    this.saved = true
-                    window.setTimeout(()=>{
-                        this.$refs.form.reset()
-                        this.overlay=false
-                    }, 600)
-                }
-            } catch(err) {
-                try {
-                    this.overlayMessage = err.response.data.errorCauses[0].errorSummary
-                } catch(e) {
-                    //lazily handle unexpected responses
-                    this.overlayMessage = 'invalid request'
-                }
-                this.error = true
-                this.saved = true
-            }
         }
     }    
 }

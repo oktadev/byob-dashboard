@@ -1,8 +1,8 @@
 <template>
     <v-col cols="4" class="mx-8">
-        <h2>Google Authenticator</h2>
+        <h2>SMS</h2>
         <div v-if="status == 'ACTIVE'">
-            You have an enrolled Google authenticator.
+            You have an enrolled for SMS authentication with {{phoneNumber}}.
             <v-form>
                 <v-btn small outlined @click="reset">
                     Remove
@@ -12,20 +12,22 @@
         <div v-else>
             <div v-if="status == 'NOT_SETUP'">
                 Available for enrollment
-                <v-form>
+                <v-form ref="enrollform">
+                    <v-text-field
+                            v-model="phoneNumber"
+                            label="Phone Number"
+                            required
+                            >
+                        </v-text-field>
                     <v-btn small outlined @click="enroll">
                         Begin
                     </v-btn>
                 </v-form>
             </div>
             <div v-else>
-                <div v-if="status == 'PENDING_ACTIVATION'">
-                    Please scan the QR code below with your app
-                    <div>
-                        <img :src=enrollQR />
-                    </div>
+                <div v-if="status == 'MFA_ENROLL_ACTIVATE'">
                     <v-form ref="activationform">
-                        Then enter a code from your token
+                        Please enter the code sent to {{phoneNumber}}
                         <v-text-field
                             v-model="activationCode"
                             label="Activation Code"
@@ -54,21 +56,22 @@
 import axios from 'axios'
 
 export default {
-    factorType: "token:software:totp",
-    provider: "GOOGLE",
+    factorType: "sms",
+    provider: "OKTA",
     name: 'factors',
     data () {
         return {
-            factorType: "token:software:totp",
-            provider: "GOOGLE",
+            overlay: false,
+            overlayMessage: undefined,
+
+            factorType: "sms",
+            provider: "OKTA",
             factorId: undefined,
             enrollment: undefined,
             status: undefined,
-            vendorName: undefined,
-            enrollQR: undefined,
+
+            phoneNumber: undefined,
             activationCode: undefined,
-            overlay: false,
-            overlayMessage: undefined,
         }
     },    
     created(){
@@ -77,35 +80,32 @@ export default {
     },
     methods: {
         updateCatalog(){
-            if(this.$parent.catalog && this.$parent.catalog.googleAuthenticator){
-                this.enrollment = this.$parent.catalog.googleAuthenticator.enrollment
-                this.status = this.$parent.catalog.googleAuthenticator.status
-                this.vendorName = this.$parent.catalog.googleAuthenticator.vendorName
+            if(this.$parent.catalog && this.$parent.catalog.sms){
+                this.enrollment = this.$parent.catalog.sms.enrollment
+                this.status = this.$parent.catalog.sms.status
             }
         },
         updateFactor(){
-            if(this.$parent.factors && this.$parent.factors.googleAuthenticator){
-                this.factorId = this.$parent.factors.googleAuthenticator.id
+            if(this.$parent.factors && this.$parent.factors.sms){
+                this.factorId = this.$parent.factors.sms.id
+                this.phoneNumber = this.$parent.factors.sms.profile.phoneNumber
             }
         },
         async enroll() {
             const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors'
             const payload = {
                 factorType: this.factorType,
-                provider: this.provider 
+                provider: this.provider ,
+                profile: {phoneNumber: this.phoneNumber}
             }
             const accessToken = await this.$auth.getAccessToken()
-            this.overlayMessage = undefined  
             try {
                 const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
                 if (res.status == 200) {
-                    this.overlayMessage = 'Google Authenticator enrolled, please activate'
-                    window.setTimeout(()=>{
-                        this.overlay=false
-                    }, 600)
                     this.status = res.data.status
                     this.factorId = res.data.id
-                    this.enrollQR = res.data._embedded.activation._links.qrcode.href
+                    this.$refs.enrollform.reset()
+                    this.phoneNumber = res.data.profile.phoneNumber
                 }
             } catch(err) {
                 this.overlay=true
@@ -119,6 +119,12 @@ export default {
                     this.overlay=false
                 }, 1000)
             }
+        },
+        async cancel() {
+
+        },
+        async resend() {
+
         },
         async activate() {
             const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors/'+this.factorId+'/lifecycle/activate'
@@ -151,6 +157,7 @@ export default {
             try {
                 await axios.delete(url, {headers: {Authorization: 'Bearer ' + accessToken}})
             } catch(err) {
+                console.log(err)
                 this.overlay=true
                 try {
                     this.overlayMessage = err.response.data.errorCauses[0].errorSummary
