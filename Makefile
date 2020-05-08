@@ -1,63 +1,59 @@
 TARGET ?= aws
+TERRAFORM ?= terraform
+API_DIR ?= byob-api
+SPA_DIR ?= byob-spa
 
 all:
-	@echo "Usage:\nmake upload\nor\nmake config"
+	@echo "Usage:\nmake okta\nor\nmake api\nornmake spa"
 
 .PHONY: checkUpload
 checkUpload:
 	@test -s ./Okta-Access-Gateway.ova || { echo "Okta-Access-Gateway.ova does not exist! Downloading..."; wget -O oag.ova https://download.oag.okta.com/ga/oag.ova; mv oag.ova Okta-Access-Gateway.ova;}
 
-.PHONY: uploadCreate
-uploadCreate: checkUpload
-	@cd ${TARGET}/oag-upload && \
+.PHONY: planOkta
+planOkta: 
+	@cd ${TERRAFORM} && \
 	terraform init && \
-	terraform plan -out=oag.upload.create.tfplan -lock=false
+	terraform plan -out=okta.setup.tfplan -lock=false
 
-.PHONY: upload
-upload: uploadCreate
-	@cd ${TARGET}/oag-upload && \
-	terraform apply -auto-approve oag.upload.create.tfplan && \
+.PHONY: okta
+okta: planOkta
+	@cd ${TERRAFORM} && \
+	terraform apply -auto-approve okta.setup.tfplan && \
 	terraform output
 
-.PHONY: uploadDelete
-uploadDelete:
-	@cd ${TARGET}/oag-upload && \
+.PHONY: destroyOktaPlan
+destroyOktaPlan:
+	@cd ${TERRAFORM} && \
 	terraform init && \
-	terraform plan -destroy -out=oag.upload.delete.tfplan
+	terraform plan -destroy -out=okta.delete.tfplan
 
-.PHONY: removeUpload
-removeUpload: uploadDelete
-	@cd ${TARGET}/oag-upload && \
-	terraform apply -auto-approve oag.upload.delete.tfplan
+.PHONY: destroyOkta
+destroyOkta: destroyOktaPlan
+	@cd ${TERRAFORM} && \
+	terraform apply -auto-approve okta.delete.tfplan
 
-.PHONY: checkConfig
-checkConfig:
-	@test -s ~/.ssh/oagkey.pub || { echo "oagkey.pub does not exist! Creating..."; mkdir -p ~/.ssh; ssh-keygen -t rsa -N "" -f ~/.ssh/oagkey; }
+.PHONY: setupApi
+setupApi: 
+	@cd ${API_DIR} && \
+	npm install
 
-.PHONY: configCreate
-configCreate: checkConfig
-	@cd ${TARGET}/oag-config && \
-	terraform init && \
-	terraform plan -out=oag.config.create.tfplan -lock=false
+.PHONY: api
+api: setupApi
+	@cd ${API_DIR} && \
+	serverless deploy -v
 
+.PHONY: removeApi
+removeApi: 
+	@cd ${API_DIR}
+	serverless remove -v
 
-.PHONY: config
-config: configCreate
-	@cd ${TARGET}/oag-config && \
-	terraform apply -auto-approve oag.config.create.tfplan && \
-	terraform output
+.PHONY: setupSpa
+setupSpa: 
+	@cd ${SPA_DIR} && \
+	npm install
 
-.PHONY: configDelete
-configDelete:
-	@cd ${TARGET}/oag-config && \
-	terraform init && \
-	terraform plan -destroy -out=oag.config.delete.tfplan
-
-.PHONY: removeConfig
-removeConfig: configDelete
-	@cd ${TARGET}/oag-config && \
-	terraform apply -auto-approve oag.config.delete.tfplan
-	
-.PHONY:test
-test:
-	@echo ${TARGET}
+.PHONY: spa
+spa: setupSpa
+	@cd ${SPA_DIR} && \
+	serverless deploy -v
