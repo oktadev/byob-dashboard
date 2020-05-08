@@ -1,0 +1,24 @@
+{
+  "name": "byob-api",
+  "version": "1.0.0",
+  "description": "BYOB API - Proxy and Registration",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@okta/jwt-verifier": "^1.0.0",
+    "aws-auth-policy": "^0.1.0",
+    "axios": "^0.19.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.672.0",
+    "jest": "^26.0.1",
+    "serverless": "^1.70.0",
+    "serverless-jest-plugin": "^0.3.0",
+    "serverless-offline": "^6.1.5",
+    "serverless-offline-ssm": "^4.1.2"
+  }
+}

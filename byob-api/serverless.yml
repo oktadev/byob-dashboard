@@ -1,0 +1,67 @@
+service: okta-byob-api
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-offline-ssm
+  - serverless-offline
+
+custom:
+  env: ${file(./${self:provider.stage}.env.json)}
+  region: ${opt:region, self:provider.region}
+  stage: ${opt:stage, self:provider.stage}
+
+outputs:
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: serverless-okta
+  region: us-east-2
+  stage: dev
+  environment:
+    OKTA_ISSUER: ${self:custom.env.ISSUER}
+    OKTA_AUDIENCE: ${self:custom.env.AUDIENCE}
+    OKTA_CLIENT_ID: ${self:custom.env.CLIENT_ID}
+    OKTA_API_KEY: ${self:custom.env.API_KEY}
+    OKTA_ORG: ${self:custom.env.ORG}
+    RECAPTCHA_SITE_SECRET: ${self:custom.env.RECAPTCHA_SITE_SECRET}
+    # OKTA_ISSUER: ${ssm:/okta/dev/issuer-uri}
+    # OKTA_AUDIENCE: ${self:custom.env.AUDIENCE}
+    # OKTA_CLIENT_ID: ${self:custom.env.CLIENT_ID}
+    # OKTA_API_KEY: ${self:custom.env.API_KEY}
+    # OKTA_ORG: ${self:custom.env.ORG}
+
+functions:
+  oktaAuth:
+    handler: authorizer/handler.auth
+    cors: true
+
+  register:
+    handler: registration/register.handler
+    events:
+      - http:
+          path: /register
+          method: POST
+          cors: true
+
+  proxy:
+    handler: proxy/okta.handler
+    events:
+      - http:
+          path: / # this matches the base path
+          method: ANY
+      - http:
+          path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
+          method: ANY
+
+resources:
+  Outputs:
+    ApiUrl:
+      Description: "The API Gateway URL"
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}"

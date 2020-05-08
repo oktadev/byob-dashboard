@@ -1,8 +1,14 @@
 .DS_Store
 node_modules
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
 /dist
 /api/*/dist
 /api/*/node_modules
+
+byob.tfvars
+hoag.tfvars
 
 # local env files
 .env.local
