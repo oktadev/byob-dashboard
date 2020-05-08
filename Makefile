@@ -3,8 +3,37 @@ TERRAFORM ?= terraform
 API_DIR ?= byob-api
 SPA_DIR ?= byob-spa
 
-all:
-	@echo "Usage:\nmake okta\nor\nmake api\nornmake spa"
+help:
+	@echo "Usage:\n\tmake okta\n\tmake api\n\tmake spa"
+	@echo "\tmake all
+
+TERRAFORM_VERSION := $(shell terraform --version 2>/dev/null)
+SERVERLESS_VERSION := $(shell serverless -v 2>/dev/null)
+AWSCLI_VERSION := $(shell aws --version 2>/dev/null)
+
+check:
+ifdef TERRAFORM_VERSION
+	@echo "Found $(TERRAFORM_VERSION)"
+else
+	@echo "`terraform` not found. Please see: https://docs.idp.rocks/setup/#install-terraform for details."
+endif
+ifdef SERVERLESS_VERSION
+	@echo "Found Serverless: $(SERVERLESS_VERSION)"
+else
+	@echo "`serverless` not found. Please see: https://docs.idp.rocks/setup/#install-serverless for details."
+endif
+ifdef AWSCLI_VERSION
+	@echo "Found $(AWSCLI_VERSION)"
+else
+	@echo "`aws` not found. Please see: https://docs.idp.rocks/setup/#install-aws-cli for details. "
+endif
+
+TERRAFORM-exists: ; @which terraform > /dev/null
+AWSCLI-exists: ; @which aws > /dev/null
+SERVERLESS-exists: ; @which serverless > /dev/null
+
+.DEFAULT_GOAL := all
+all: check okta api spa
 
 .PHONY: planOkta
 planOkta: 
