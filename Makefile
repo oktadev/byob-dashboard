@@ -6,10 +6,6 @@ SPA_DIR ?= byob-spa
 all:
 	@echo "Usage:\nmake okta\nor\nmake api\nornmake spa"
 
-.PHONY: checkUpload
-checkUpload:
-	@test -s ./Okta-Access-Gateway.ova || { echo "Okta-Access-Gateway.ova does not exist! Downloading..."; wget -O oag.ova https://download.oag.okta.com/ga/oag.ova; mv oag.ova Okta-Access-Gateway.ova;}
-
 .PHONY: planOkta
 planOkta: 
 	@cd ${TERRAFORM} && \
@@ -45,7 +41,7 @@ api: setupApi
 
 .PHONY: removeApi
 removeApi: 
-	@cd ${API_DIR}
+	@cd ${API_DIR} && \
 	serverless remove -v
 
 .PHONY: setupSpa
