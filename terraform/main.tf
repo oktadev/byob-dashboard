@@ -2,31 +2,6 @@
 #    Oauth2 SPA
 #    Custom authorization server for SPA
 
-# TF Variables
-variable "org_name" {
-}
-
-variable "api_token" {
-}
-
-variable "base_url" {
-  default = "okta.com" #"oktapreview.com" if using non-prod.
-}
-
-variable "app_url" {
-}
-
-variable "environment" {
-  default = "dev"
-}
-
-variable "aws_region" {
-  default = "us-east-1"
-}
-
-variable "aws_profile" {
-}
-
 # Setup Okta Tenant
 provider "okta" {
   org_name  = var.org_name
@@ -35,16 +10,15 @@ provider "okta" {
   version   = "~> 3.0"
 }
 
-provider "aws" {
-  region                  = var.aws_region
-  shared_credentials_file = "~/.aws/creds"
-  profile                 = var.aws_profile
-}
-
 # BYOB Users - Everyone 
-resource "okta_group" "byob-users" {
+data "okta_group" "byob-users" {
   name = "Everyone"
 }
+
+# Get default IDP Policy
+# data "okta_default_policy" "idp_policy" {
+#   type = "IDP_DISCOVERY"
+# }
 
 # Create OAuth2 SPA App
 resource "okta_app_oauth" "okta-byob" {
@@ -60,7 +34,7 @@ resource "okta_app_oauth" "okta-byob" {
 # Create the App Assignment
 resource "okta_app_group_assignment" "okta-byob" {
   app_id   = okta_app_oauth.okta-byob.id
-  group_id = okta_group.byob-users.id
+  group_id = data.okta_group.byob-users.id
 }
 
 # Create Trusted Origin for the APP
@@ -152,53 +126,11 @@ resource "okta_auth_server_policy_rule" "okta-byob" {
   priority                      = 1
   grant_type_whitelist          = ["authorization_code"]
   scope_whitelist               = ["*"]
-  group_whitelist               = [okta_group.byob-users.id]
+  group_whitelist               = [data.okta_group.byob-users.id]
   access_token_lifetime_minutes = 60
 }
 
-resource "aws_ssm_parameter" "okta-api-token" {
-  name        = "/okta/${var.environment}/api-token"
-  description = "Okta API Token"
-  type        = "SecureString"
-  value       = var.api_token
 
-  tags = {
-    environment = var.environment
-  }
-}
-
-resource "aws_ssm_parameter" "okta-client-id" {
-  name        = "/okta/${var.environment}/client-id"
-  description = "Okta App Client ID"
-  type        = "String"
-  value       = okta_app_oauth.okta-byob.client_id
-
-  tags = {
-    environment = var.environment
-  }
-}
-
-resource "aws_ssm_parameter" "okta-issuer-uri" {
-  name        = "/okta/${var.environment}/issuer-uri"
-  description = "Okta Issuer URI"
-  type        = "String"
-  value       = "https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-byob.id}"
-
-  tags = {
-    environment = var.environment
-  }
-}
-
-resource "aws_ssm_parameter" "okta-audience" {
-  name        = "/okta/${var.environment}/audience"
-  description = "Okta Audience"
-  type        = "String"
-  value       = "api://${local.app_name}"
-
-  tags = {
-    environment = var.environment
-  }
-}
 
 # Outputs
 output "okta_app_oauth_client_id" {
@@ -212,6 +144,10 @@ output "okta_auth_server_id" {
 output "okta_auth_server_issuer_uri" {
   value = "https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-byob.id}"
 }
+
+# output "okta_idp_policy" {
+#   value = "${data.okta_default_policy.idp_policy.id}"
+# }
 
 # Local variables
 locals {

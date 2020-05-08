@@ -1,14 +1,14 @@
 .DS_Store
 node_modules
 .terraform
+.serverless
 terraform.tfstate
 terraform.tfstate.backup
 /dist
 /api/*/dist
 /api/*/node_modules
 
-byob.tfvars
-hoag.tfvars
+*.tfvars
 
 # local env files
 .env.local
