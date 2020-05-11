@@ -1,6 +1,8 @@
 <template>
     <div>
+        <v-progress-linear :indeterminate="true" v-if="loading"></v-progress-linear>
         <template v-if="catalog.googleAuthenticator">
+            <!-- <WebAuthn ref="webauthn"></WebAuthn> -->
             <Verify ref="verify"></Verify>
             <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
             <SMS ref="sms"></SMS>
@@ -15,10 +17,12 @@ import GoogleAuthenticator from '@/components/GoogleAuthenticator'
 import SMS from '@/components/SMS'
 import SecurityQuestion from '@/components/SecurityQuestion'
 import Verify from '@/components/Verify'
+import WebAuthn from '@/components/WebAuthn'
 
 export default {
     name: 'factors',
     components:{
+        // WebAuthn,
         Verify,
         GoogleAuthenticator,
         SMS,
@@ -30,19 +34,22 @@ export default {
                 googleAuthenticator: undefined,
                 sms: undefined,
                 securityQuestion: undefined,
-                verify: undefined
+                verify: undefined,
+                // webauthn: undefined,
             },
             catalog:{
                 googleAuthenticator: undefined,
                 sms: undefined,
                 securityQuestion: undefined,
-                verify: undefined
+                verify: undefined,
+                // webauthn: undefined,
             },
             processing: false,
             overlay: false,
             saved: false,
             overlayMessage: undefined,
             error: false,
+            loading: true
         }
     },
     created(){
@@ -65,8 +72,18 @@ export default {
                 var url = this.$config.api + '/api/v1/users/' + user.sub + '/factors/catalog'
                 console.log("Calling url", url);
                 const catalogRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
+                this.loading = false;
                 var catalogFactors = catalogRes.data
                 for(var i=0; i<catalogFactors.length; i++){
+                    // handle webauthn
+                    // if (catalogFactors[i].factorType === WebAuthn.factorType && catalogFactors[i].provider === WebAuthn.provider) {
+                    //     this.catalog.webauthn = catalogFactors[i]
+                    //     if (this.$refs.webauthn) {
+                    //         this.$refs.webauthn.updateCatalog()
+                    //     }
+                    //     continue;
+                    // }
+
                     //handle verify
                     if(catalogFactors[i].factorType == Verify.factorType && catalogFactors[i].provider == Verify.provider){
                         this.catalog.verify = catalogFactors[i]
