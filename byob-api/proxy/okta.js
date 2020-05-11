@@ -1,8 +1,8 @@
 const axios = require("axios");
 const apiKey = process.env.OKTA_API_KEY;
-const orgUrl = process.env.OKTA_ORG;
+const orgUrl = process.env.ISSUER.split("/oauth2")[0];
 
-exports.handler = async function(event, context, callback) {
+exports.handler = async function (event, context, callback) {
   const response = {
     isBase64Encoded: false,
     headers: {
@@ -23,12 +23,22 @@ exports.handler = async function(event, context, callback) {
     await stripReadOnlyAttributes(orgUrl, apiKey, profile);
   }
   try {
+    console.log(
+      "Request",
+      JSON.stringify({
+        method: event.httpMethod,
+        url: requestString,
+        data: requestBody,
+        headers: { Authorization: "SSWS " + apiKey },
+      })
+    );
     let res = await axios({
       method: event.httpMethod,
       url: requestString,
       data: requestBody,
       headers: { Authorization: "SSWS " + apiKey },
     });
+    console.log("Response", res);
     response.statusCode = res.status;
     response.body = JSON.stringify(res.data);
   } catch (err) {

@@ -25,10 +25,10 @@ export default {
           display: "page",
         },
         features: {
-          passwordlessAuth: true,
-          webauthn: true,
+          // passwordlessAuth: true,
+          // webauthn: true,
           multiOptionalFactorEnroll: true,
-          idpDiscovery: true,
+          // idpDiscovery: true,
         },
       };
       this.widget = new OktaSignIn(config);

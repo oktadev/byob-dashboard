@@ -3,7 +3,7 @@ service: okta-byob-api
 frameworkVersion: ">=1.1.0 <2.0.0"
 
 plugins:
-  - serverless-offline-ssm
+  # - serverless-offline-ssm
   - serverless-offline
 
 custom:
@@ -30,9 +30,10 @@ provider:
     # Set the SSM Parameter directly as an environment variable
     ISSUER: ${ssm:${self:custom.ssmParameters.OKTA_ISSUER}}
     AUDIENCE: ${ssm:${self:custom.ssmParameters.OKTA_AUDIENCE}}
-    CLIENT_ID: ${ssm:${self:custom.ssmParameters.OKTA_CLIENT_ID}}
+    OKTA_CLIENT_ID: ${ssm:${self:custom.ssmParameters.OKTA_CLIENT_ID}}
+
     #To-Do: Set SecureString parameter name in environment variable, not the actual value.
-    API_KEY: ${ssm:${self:custom.ssmParameters.OKTA_API_TOKEN}~true}
+    OKTA_API_KEY: ${ssm:${self:custom.ssmParameters.OKTA_API_TOKEN}~true}
     RECAPTCHA_SITE_SECRET: ${ssm:${self:custom.ssmParameters.RECAPTCHA_SITE_SECRET}~true}
 
   # To-Do: IAM Policy to Read SSM Parameters
@@ -60,11 +61,9 @@ functions:
     handler: proxy/okta.handler
     events:
       - http:
-          path: / # this matches the base path
+          path: /api/v1/{proxy+} # this matches any path, the token 'any' doesn't mean anything special
           method: ANY
-      - http:
-          path: /{any+} # this matches any path, the token 'any' doesn't mean anything special
-          method: ANY
+          cors: true
 
 resources:
   Outputs:
