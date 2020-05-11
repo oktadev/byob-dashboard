@@ -23,7 +23,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
 1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**
 2. Click **Next**, then enter an Application **Name**. Then:
    * Set Base URIs to `http://localhost:8080/` (it should already be set by default)
-   * Leave the default setting `http://localhost:8080/implicit/callback` value in the list of *Redirect URIs*
+   * Set `http://localhost:8080/oauth/callback` as the *Redirect URI* 
    * Leave the default setting, Group assignments = **Everyone**
    * Select **Authorization Code** and deselect the default **Implicit** checkbox
 3. Click **Done** to redirect back to the *General* tab of your application.
@@ -58,7 +58,7 @@ export default {
     oidc: {
         client_id: '{{Your Client ID from the "Okta Org Setup" setup}}',
         issuer: 'https://{{Your Okta Org Url}}/oauth2/default',
-        redirect_uri: '/implicit/callback',
+        redirect_uri: '/oauth/callback',
         scope: 'openid profile email',
     },
     loginRedirect: true

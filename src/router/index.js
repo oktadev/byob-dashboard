@@ -23,7 +23,7 @@ const router = new Router({
       component: LoginComponent
     },
     {
-      path: '/implicit/callback',
+      path: '/oauth/callback',
       component: Auth.handleCallback()
     },
     {
