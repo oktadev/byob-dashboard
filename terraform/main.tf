@@ -70,40 +70,40 @@ resource "okta_auth_server_policy" "okta-byob" {
   client_whitelist = [okta_app_oauth.okta-byob.client_id]
 }
 
-# Create tokens claim in custom authorization server
-resource "okta_auth_server_claim" "okta-byob-tenants-at" {
-  auth_server_id = okta_auth_server.okta-byob.id
-  name           = "tenants"
-  value          = "appuser.tenants"
-  value_type     = "EXPRESSION"
+# # Create tokens claim in custom authorization server
+# resource "okta_auth_server_claim" "okta-byob-tenants-at" {
+#   auth_server_id = okta_auth_server.okta-byob.id
+#   name           = "tenants"
+#   value          = "appuser.tenants"
+#   value_type     = "EXPRESSION"
 
-  ## Not Tied to Any scope
-  #scopes         = [okta_auth_server_scope.okta-byob.name]
-  claim_type = "RESOURCE"
-}
+#   ## Not Tied to Any scope
+#   #scopes         = [okta_auth_server_scope.okta-byob.name]
+#   claim_type = "RESOURCE"
+# }
 
-resource "okta_auth_server_claim" "okta-byob-tenants-id" {
-  auth_server_id = okta_auth_server.okta-byob.id
-  name           = "tenants"
-  value          = "appuser.tenants"
-  value_type     = "EXPRESSION"
+# resource "okta_auth_server_claim" "okta-byob-tenants-id" {
+#   auth_server_id = okta_auth_server.okta-byob.id
+#   name           = "tenants"
+#   value          = "appuser.tenants"
+#   value_type     = "EXPRESSION"
 
-  ## Not Tied to Any scope
-  #scopes         = [okta_auth_server_scope.okta-byob.name]
-  claim_type = "IDENTITY"
-}
+#   ## Not Tied to Any scope
+#   #scopes         = [okta_auth_server_scope.okta-byob.name]
+#   claim_type = "IDENTITY"
+# }
 
-resource "okta_auth_server_claim" "okta-byob-groups-at" {
-  auth_server_id    = okta_auth_server.okta-byob.id
-  name              = "groups"
-  value             = ".*"
-  value_type        = "GROUPS"
-  group_filter_type = "REGEX"
+# resource "okta_auth_server_claim" "okta-byob-groups-at" {
+#   auth_server_id    = okta_auth_server.okta-byob.id
+#   name              = "groups"
+#   value             = ".*"
+#   value_type        = "GROUPS"
+#   group_filter_type = "REGEX"
 
-  ## Not Tied to Any scope
-  #scopes         = [okta_auth_server_scope.okta-byob.name]
-  claim_type = "RESOURCE"
-}
+#   ## Not Tied to Any scope
+#   #scopes         = [okta_auth_server_scope.okta-byob.name]
+#   claim_type = "RESOURCE"
+# }
 
 # resource "okta_auth_server_claim" "okta-byob-groups-id" {
 #   auth_server_id    = okta_auth_server.okta-byob.id
