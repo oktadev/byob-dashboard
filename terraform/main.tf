@@ -24,7 +24,7 @@ data "okta_group" "byob-users" {
 resource "okta_app_oauth" "okta-byob" {
   label                      = local.app_name
   type                       = "browser"
-  redirect_uris              = ["${var.app_url}/implicit/callback", "${var.app_url}/pkce/callback"]
+  redirect_uris              = ["${var.app_url}/callback"]
   grant_types                = ["authorization_code"]
   response_types             = ["code"]
   token_endpoint_auth_method = "none"
