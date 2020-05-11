@@ -2,7 +2,7 @@
     <div>
         <v-progress-linear :indeterminate="true" v-if="loading"></v-progress-linear>
         <template v-if="catalog.googleAuthenticator">
-            <!-- <WebAuthn ref="webauthn"></WebAuthn> -->
+            <!-- <WebAuthn v-show="false" ref="webauthn"></WebAuthn> -->
             <Verify ref="verify"></Verify>
             <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
             <SMS ref="sms"></SMS>
@@ -17,7 +17,7 @@ import GoogleAuthenticator from '@/components/GoogleAuthenticator'
 import SMS from '@/components/SMS'
 import SecurityQuestion from '@/components/SecurityQuestion'
 import Verify from '@/components/Verify'
-import WebAuthn from '@/components/WebAuthn'
+// import WebAuthn from '@/components/WebAuthn'
 
 export default {
     name: 'factors',
