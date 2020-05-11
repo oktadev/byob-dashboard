@@ -61,7 +61,7 @@ functions:
     handler: proxy/okta.handler
     events:
       - http:
-          path: /api/v1/{proxy+} # this matches any path, the token 'any' doesn't mean anything special
+          path: /api/v1/{proxy+}
           method: ANY
           cors: true
 
