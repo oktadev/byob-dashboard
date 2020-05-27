@@ -17,57 +17,58 @@ This project is built in Vue.js and uses
 * [Okta Vue.js SDK](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue) 
 * [Okta Sign-in Widget 3.x](https://github.com/okta/okta-signin-widget)
 
+## Prerequisites
+* Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
+    * Skip if you want to [manually configure Okta](/terraform)
+* Install [vuecli](https://cli.vuejs.org/#getting-started)
+    e.g. via npm:
+    ```
+    npm install @vue/cli -g
+    ```
+* Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
+    e.g. via npm:
+    ```
+    npm install -g serverless
+    ```
 
-## Okta Org Setup
-This application is represented by an OpenID Connect application in Okta, so we need to configure one:
-1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**
-2. Click **Next**, then enter an Application **Name**. Then:
-   * Set Base URIs to `http://localhost:8080/` (it should already be set by default)
-   * Leave the default setting `http://localhost:8080/implicit/callback` value in the list of *Redirect URIs*
-   * Leave the default setting, Group assignments = **Everyone**
-   * Select **Authorization Code** and deselect the default **Implicit** checkbox
-3. Click **Done** to redirect back to the *General* tab of your application.
-4. Make note of the **Client ID**, as it will be needed environment configuration. 
-5. Make sure that **Use PKCE (for public clients)** (underneath the Client Id) is selected
-6. Navigate to **Api** > **Trusted Origins** and add `http://localhost:8080` as a type = **CORS** entry.
+## Okta Setup
+Use the provided Makefile:
+```
+make Okta
+```
 
-## Local Installation
-1. Clone this repository and `cd` into the main directory
+Or manually call the terraform scripts:
+1. cd `/terraform`
+2. run `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
+3. run `terraform apply -auto-approve okta.setup.tfplan`
+
+Head over to the [terraform](/terraform) folder for additioinal details.
+
+### SPA APIs
+We've implemented user management (manage profile, password & factors) APIs using Lambda and Amazon API Gateway. Navigate to the  [api folder](/byob-api) for more info.
+
+Use the provided Makefile to deploy the api with serverless:
+```
+make api
+```
+
+### Front End (Local Installation)
+1. `cd` into `/byob-spa`
 2. Run `npm install`
-3. Run `npm install @vue/cli -g`
-4. Create env file `.env.development.local` in the root directory (There is an existing `.env` file. Do not touch that file, add this new file in addition to it). Edit it in with the values below:
+3. Create env file `.env.development.local` in the root directory (There is an existing `.env` file. Do not touch that file, add this new file in addition to it). Edit it in with the values below:
 ```
-VUE_APP_CLIENT_ID={{Your Client ID from the "Okta Org Setup" setup}}
-VUE_APP_ISSUER=https://{{Your Okta Org Url}}/oauth2/default
-VUE_APP_API=https://oted1jcxcb.execute-api.us-east-2.amazonaws.com/stage/dashboard
+VUE_APP_CLIENT_ID={{Your Client ID from the "Okta Org" setup}}
+VUE_APP_ISSUER={{Your Issuer URI from the "Okta Org" setup}}
+VUE_APP_API={{The [api](/byob-api) that was deployed in the previous step}}
 ```
-5. The following command compiles and hot-reloads for development environment
+4. The following command compiles and hot-reloads for development environment
 `npm run serve`
-6. Open your browser to `http://localhost:8080` and login
+5. Open your browser to `http://localhost:8080` and login
 
-## Compile and minify for production
+### Compile and minify for production
 ```
 npm run build
 ```
 
-# Alternative Login Flow
-To see an example of logging in via redirect to the Okta hosted Signin page *(instead of the Signin Widget)*, add `loginRedirect` to the `.config.js` file.
-The resulting file should look like this:
-```
-export default {
-    oidc: {
-        client_id: '{{Your Client ID from the "Okta Org Setup" setup}}',
-        issuer: 'https://{{Your Okta Org Url}}/oauth2/default',
-        redirect_uri: '/implicit/callback',
-        scope: 'openid profile email',
-    },
-    loginRedirect: true
-}
-```
-
-# Overriding the Icons uploaded into Okta
-Sometimes it is useful to override the App icons that were uploaded into Okta with higher resolution images. To do this, edit the `/src/assets/icons.js` file with a list of objects containing the appId and the associated logo URL. 
-
-
-# SPA APIs
-This sample provides sample implementation user management (profile/password update) using Lambda and Amazon API Gateway. Navigate to the  [api folder](/api) to see more.
+### Options
+Head over to the [spa folder](/byob-spa) for details on how to enable some built-in options

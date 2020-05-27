@@ -22,9 +22,9 @@ outputs:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs10.x
   profile: serverless-okta
-  region: us-east-1
+  region: us-east-2
   stage: dev
   environment:
     # Set the SSM Parameter directly as an environment variable
