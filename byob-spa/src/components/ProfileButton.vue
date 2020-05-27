@@ -82,7 +82,6 @@ export default {
     methods: {
         async logout () {
             await this.$auth.logout()
-            window.location.href="/"
         },
         showProfile() {
             this.$router.push({

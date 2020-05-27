@@ -22,10 +22,14 @@ This project is built in Vue.js and uses
     * Skip if you want to [manually configure Okta](/terraform)
 
 * Install [vuecli](https://cli.vuejs.org/#getting-started)
+
+    e.g. via npm:
     ```
     npm install @vue/cli -g
     ```
 * Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
+
+    e.g. via npm:
     ```
     npm install -g serverless
     ```
