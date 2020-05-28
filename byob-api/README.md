@@ -5,7 +5,7 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
 
 ---
 
-**If you chose not to use the Makefile, deploy using these steps:**
+**If you've decided not to use the Makefile, deploy using these steps:**
 
 ## Prerequisites
 * Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
