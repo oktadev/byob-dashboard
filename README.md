@@ -17,37 +17,61 @@ This project is built in Vue.js and uses
 * [Okta Vue.js SDK](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue) 
 * [Okta Sign-in Widget 3.x](https://github.com/okta/okta-signin-widget)
 
-## Prerequisites
-* Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
+## Setup
+Setting up the required configurations in Okta; the API Gateway and lambda functions (in AWS, for the REST APIs) are quite involved. So we've leveraged [Terraform](https://www.terraform.io/) and [Serverless](https://www.serverless.com), and provided a Makefile:
+
+### Prerequisites
+1. Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
     * Skip if you want to [manually configure Okta](/terraform)
 
-* Install [vuecli](https://cli.vuejs.org/#getting-started)
-
-    e.g. via npm:
-    ```
-    npm install @vue/cli -g
-    ```
-* Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
+2. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
     e.g. via npm:
     ```
     npm install -g serverless
     ```
+3. Create a Named Profile in AWS. [Steps](https://docs.idp.rocks/setup/#create-named-profile-in-aws-cli)
+4. Enable Programmatic Access for Okta. [Steps](https://docs.idp.rocks/setup/#enable-programmatic-access-to-okta)
 
-## Okta Setup
+### Environment Variables
+Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
+```
+org_name       = "<org subdomain>"
+base_url       = "<oktapreview.com || okta.com>"
+api_token      = "<OKTA_API_TOKEN>"
+app_url        = "http://localhost:8080"
+environment    = "dev"
+aws_region     = "us-east-2"
+aws_profile    = "(see Prerequisites Step 4.)"
+aws_ssm_prefix = "byob"
+recaptcha-site-secret = "<Google Recaptcha Site Secret>"
+```
+Where the above variables are:
+| Variable       | Description                                                      | Default Value         |
+| -------------- |:---------------------------------------------------------------- | --------------------- |
+| org_name       | Okta Org subdomain name (e.g. "atko")                            |                       |
+| base_url       | Base URL for the Okta org (okta.com or oktapreview.com)          | okta.com              |
+| api_token      | OKTA_API_TOKEN, per prerequisites Step 5. (above)                |                       |
+| app_url        | Base URL for the SPA.                                            | http://localhost:8080 |
+| environment    | Stage configured in API Gateway (dev, prod, ...)                 | dev                   |
+| aws_region     | Region to deploy AWS components.                                 | "us-east-2"           |
+| aws_profile    | Profile configured in AWS CLI. per prerequisites Step 4. (above) |                       |
+| aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.            | byob                  |
+| recaptcha-site-secret | Google Recaptcha Site Secret                              |                       |
+
+#### Okta Setup
 Use the provided Makefile:
 ```
 make Okta
 ```
-
-Or manually call the terraform scripts:
-1. cd `/terraform`
-2. run `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
-3. run `terraform apply -auto-approve okta.setup.tfplan`
+* Or manually call the terraform scripts:
+    1. cd `/terraform`
+    2. run `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
+    3. run `terraform apply -auto-approve okta.setup.tfplan`
 
 Head over to the [terraform](/terraform) folder for additioinal details.
 
-### SPA APIs
+#### SPA APIs
 We've implemented user management (manage profile, password & factors) APIs using Lambda and Amazon API Gateway. Navigate to the  [api folder](/byob-api) for more info.
 
 Use the provided Makefile to deploy the api with serverless:
@@ -56,17 +80,31 @@ make api
 ```
 
 ### Front End (Local Installation)
-1. `cd` into `/byob-spa`
-2. Run `npm install`
-3. Create env file `.env.development.local` in the root directory (There is an existing `.env` file. Do not touch that file, add this new file in addition to it). Edit it in with the values below:
+
+1. Install [vuecli](https://cli.vuejs.org/#getting-started)
+
+    e.g. via npm:
+    ```
+    npm install @vue/cli -g
+    ```
+
+2. `cd` into `/byob-spa`, then:
+3. Run `npm install`
+4. Create env file `.env.development.local` (In that same `byob-spa` directory. Note: there is an existing `.env` file. Do not touch that file, add this new file in addition to it). Edit it in with the values below:
 ```
-VUE_APP_CLIENT_ID={{Your Client ID from the "Okta Org" setup}}
-VUE_APP_ISSUER={{Your Issuer URI from the "Okta Org" setup}}
-VUE_APP_API={{The [api](/byob-api) that was deployed in the previous step}}
+VUE_APP_CLIENT_ID={{client_id}}
+VUE_APP_ISSUER={{issuer_uri}}
+VUE_APP_API={{api_base_url}}
 ```
-4. The following command compiles and hot-reloads for development environment
+| Env Var           | Where to find |
+| ---               |:--- |
+| VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
+| VUE_APP_ISSUER    | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
+| VUE_APP_API       | The api base url of the API that was deployed in [this step](#spa-apis) |
+
+5. The following command compiles and hot-reloads for development environment
 `npm run serve`
-5. Open your browser to `http://localhost:8080` and login
+6. Open your browser to `http://localhost:8080` and login
 
 ### Compile and minify for production
 ```

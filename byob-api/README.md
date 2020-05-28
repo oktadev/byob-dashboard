@@ -19,17 +19,15 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
 * Update the `serverless.yml` file with your environment variables:
 ```
 custom:
-  #env: ${file(./${self:provider.stage}.env.json)}
   region: ${opt:region, self:provider.region}
   stage: ${opt:stage, self:provider.stage}
-  ssmPrefix: byob # This should match the prefix in the terraform script
+  ssmPrefix: byob
   ssmParameters:
     OKTA_ISSUER: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/issuer-uri"
     OKTA_AUDIENCE: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/audience"
     OKTA_CLIENT_ID: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/client-id"
     OKTA_API_TOKEN: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/api-token"
     RECAPTCHA_SITE_SECRET: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/recaptcha-site-secret"
-
 ```
 
 * Run the serverless deploy command
