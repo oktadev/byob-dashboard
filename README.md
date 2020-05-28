@@ -34,49 +34,43 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 4. Enable Programmatic Access for Okta. [Steps](https://docs.idp.rocks/setup/#enable-programmatic-access-to-okta)
 
 ### Environment Variables
-Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
+* Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
+    ```
+    org_name       = "<org subdomain>"
+    base_url       = "<oktapreview.com || okta.com>"
+    api_token      = "<OKTA_API_TOKEN>"
+    app_url        = "http://localhost:8080"
+    environment    = "dev"
+    aws_region     = "us-east-2"
+    aws_profile    = "(see Prerequisites Step 4.)"
+    aws_ssm_prefix = "byob"
+    recaptcha-site-secret = "<Google Recaptcha Site Secret>"
+    ```
+    Where the above variables are:
 
-```
-org_name       = "<org subdomain>"
-base_url       = "<oktapreview.com || okta.com>"
-api_token      = "<OKTA_API_TOKEN>"
-app_url        = "http://localhost:8080"
-environment    = "dev"
-aws_region     = "us-east-2"
-aws_profile    = "(see Prerequisites Step 4.)"
-aws_ssm_prefix = "byob"
-recaptcha-site-secret = "<Google Recaptcha Site Secret>"
-```
+    | Variable       | Description                                                      | Default Value           |
+    | -------------- |:---------------------------------------------------------------- | ----------------------- |
+    | org_name       | Okta Org subdomain name (e.g. "atko")                            |                         |
+    | base_url       | Base URL for the Okta org (okta.com or oktapreview.com)          | "okta.com"              |
+    | api_token      | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)      |                         |
+    | app_url        | Base URL for the SPA.                                            | "http://localhost:8080" |
+    | environment    | Stage configured in API Gateway (dev, prod, ...)                 | "dev"                   |
+    | aws_region     | Region to deploy AWS components.                                 | "us-east-2"             |
+    | aws_profile    | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites)|                |
+    | aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.            | "byob"                  |
+    | recaptcha-site-secret | Google Recaptcha Site Secret                              |                         |
 
-Where the above variables are:
-
-| Variable       | Description                                                      | Default Value           |
-| -------------- |:---------------------------------------------------------------- | ----------------------- |
-| org_name       | Okta Org subdomain name (e.g. "atko")                            |                         |
-| base_url       | Base URL for the Okta org (okta.com or oktapreview.com)          | "okta.com"              |
-| api_token      | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)      |                         |
-| app_url        | Base URL for the SPA.                                            | "http://localhost:8080" |
-| environment    | Stage configured in API Gateway (dev, prod, ...)                 | "dev"                   |
-| aws_region     | Region to deploy AWS components.                                 | "us-east-2"             |
-| aws_profile    | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites)|                |
-| aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.            | "byob"                  |
-| recaptcha-site-secret | Google Recaptcha Site Secret                              |                         |
-
-
-Once `/terraform/terraform.tfvars` is populated correctly, you can run the scripts:
+* Once `/terraform/terraform.tfvars` is populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
 
 #### Okta Setup
-Use the provided Makefile:
-```
-make Okta
-```
-* Or manually run terraform:
-    1. `cd` into the `/terraform` folder, then run
-    2. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
-    3. `terraform apply -auto-approve okta.setup.tfplan`
+* Use the provided Makefile:
+    ```
+    make Okta
+    ```
 
-    Head over to the [terraform](/terraform) folder for additioinal details.
-* Or skip all this if you prefer to manually configure Okta. Refer to the steps [here](/terraform#manually-configure-okta) instead.
+* Or if you prefer not to use the Makefile, follow [these](terraform#terraform) steps.
+
+Head over to the [terraform](/terraform) folder for additioinal details.
 
 #### SPA APIs
 We've implemented user management (manage profile, password & factors) APIs using Serverless framework. 
@@ -90,7 +84,7 @@ We've implemented user management (manage profile, password & factors) APIs usin
 
 Navigate to the  [api folder](/byob-api) for more info.
 
-### Single Page Application (Local Installation)
+## Single Page Application (Local Installation)
 
 1. Prerequisite: Install [vuecli](https://cli.vuejs.org/#getting-started)
 

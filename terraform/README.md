@@ -1,8 +1,17 @@
 # Terraform
 This application is represented by an OpenID Connect application in Okta, so we need to configure one. We'll use the [Okta Terraform Provider](https://www.terraform.io/docs/providers/okta/index.html) to automate this process.
 
-## Details
-If you prefer to configure your org manually:
+## Prerequisites
+* Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
+
+**If you've decided not to use the provided Makefile, terraform using these steps:**
+
+## Terraform
+1. `cd` into the `/terraform` folder, then run
+2. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
+3. `terraform apply -auto-approve okta.setup.tfplan`
+
+**If you prefer to manually configure Okta. Refer to the steps [below](#manually-configure-okta) instead.**
 
 ### Manually Configure Okta
 1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**
