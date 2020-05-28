@@ -46,18 +46,18 @@ aws_profile    = "(see Prerequisites Step 4.)"
 aws_ssm_prefix = "byob"
 recaptcha-site-secret = "<Google Recaptcha Site Secret>"
 ```
-Where the above variables are:
-| Variable       | Description                                                      | Default Value         |
-| -------------- |:---------------------------------------------------------------- | --------------------- |
-| org_name       | Okta Org subdomain name (e.g. "atko")                            |                       |
-| base_url       | Base URL for the Okta org (okta.com or oktapreview.com)          | okta.com              |
-| api_token      | OKTA_API_TOKEN, per prerequisites Step 5. (above)                |                       |
-| app_url        | Base URL for the SPA.                                            | http://localhost:8080 |
-| environment    | Stage configured in API Gateway (dev, prod, ...)                 | dev                   |
-| aws_region     | Region to deploy AWS components.                                 | "us-east-2"           |
-| aws_profile    | Profile configured in AWS CLI. per prerequisites Step 4. (above) |                       |
-| aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.            | byob                  |
-| recaptcha-site-secret | Google Recaptcha Site Secret                              |                       |
+    Where the above variables are:
+    | Variable       | Description                                                      | Default Value         |
+    | -------------- |:---------------------------------------------------------------- | --------------------- |
+    | org_name       | Okta Org subdomain name (e.g. "atko")                            |                       |
+    | base_url       | Base URL for the Okta org (okta.com or oktapreview.com)          | okta.com              |
+    | api_token      | OKTA_API_TOKEN, per prerequisites Step 5. (above)                |                       |
+    | app_url        | Base URL for the SPA.                                            | http://localhost:8080 |
+    | environment    | Stage configured in API Gateway (dev, prod, ...)                 | dev                   |
+    | aws_region     | Region to deploy AWS components.                                 | "us-east-2"           |
+    | aws_profile    | Profile configured in AWS CLI. per prerequisites Step 4. (above) |                       |
+    | aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.            | byob                  |
+    | recaptcha-site-secret | Google Recaptcha Site Secret                              |                       |
 
 #### Okta Setup
 Use the provided Makefile:
@@ -72,7 +72,7 @@ make Okta
 Head over to the [terraform](/terraform) folder for additioinal details.
 
 #### SPA APIs
-We've implemented user management (manage profile, password & factors) APIs using Lambda and Amazon API Gateway. Navigate to the  [api folder](/byob-api) for more info.
+We've implemented user management (manage profile, password & factors) APIs using Serverless framework. Navigate to the  [api folder](/byob-api) for more info.
 
 Use the provided Makefile to deploy the api with serverless:
 ```
@@ -91,16 +91,16 @@ make api
 2. `cd` into `/byob-spa`, then:
 3. Run `npm install`
 4. Create env file `.env.development.local` (In that same `byob-spa` directory. Note: there is an existing `.env` file. Do not touch that file, add this new file in addition to it). Edit it in with the values below:
-```
-VUE_APP_CLIENT_ID={{client_id}}
-VUE_APP_ISSUER={{issuer_uri}}
-VUE_APP_API={{api_base_url}}
-```
-| Env Var           | Where to find |
-| ---               |:--- |
-| VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
-| VUE_APP_ISSUER    | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
-| VUE_APP_API       | The api base url of the API that was deployed in [this step](#spa-apis) |
+    ```
+    VUE_APP_CLIENT_ID={{client_id}}
+    VUE_APP_ISSUER={{issuer_uri}}
+    VUE_APP_API={{api_base_url}}
+    ```
+    | Env Var           | Where to find |
+    | ---               |:--- |
+    | VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
+    | VUE_APP_ISSUER    | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
+    | VUE_APP_API       | The api base url of the API that was deployed in [this step](#spa-apis) |
 
 5. The following command compiles and hot-reloads for development environment
 `npm run serve`
