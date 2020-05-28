@@ -68,7 +68,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     make Okta
     ```
 
-* Or if you prefer not to use the Makefile, follow [these](terraform#terraform) steps.
+* Or if you prefer not to use the Makefile, follow [these](terraform#run-terraform) steps.
 
 Head over to the [terraform](/terraform) folder for additioinal details.
 
