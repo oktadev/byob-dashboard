@@ -2,6 +2,7 @@
     <div>
         <template v-if="catalog.googleAuthenticator">
             <Verify ref="verify"></Verify>
+            <VerifyPush ref="verifyPush"></VerifyPush>
             <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
             <SMS ref="sms"></SMS>
             <SecurityQuestion ref="securityQuestion"></SecurityQuestion>
@@ -15,10 +16,12 @@ import GoogleAuthenticator from '@/components/GoogleAuthenticator'
 import SMS from '@/components/SMS'
 import SecurityQuestion from '@/components/SecurityQuestion'
 import Verify from '@/components/Verify'
+import VerifyPush from '@/components/VerifyPush'
 
 export default {
     name: 'factors',
     components:{
+        VerifyPush,
         Verify,
         GoogleAuthenticator,
         SMS,
@@ -30,13 +33,15 @@ export default {
                 googleAuthenticator: undefined,
                 sms: undefined,
                 securityQuestion: undefined,
-                verify: undefined
+                verify: undefined,
+                verifyPush: undefined
             },
             catalog:{
                 googleAuthenticator: undefined,
                 sms: undefined,
                 securityQuestion: undefined,
-                verify: undefined
+                verify: undefined,
+                verifyPush: undefined
             },
             processing: false,
             overlay: false,
@@ -70,6 +75,14 @@ export default {
                         this.catalog.verify = catalogFactors[i]
                         if(this.$refs.verify){
                             this.$refs.verify.updateCatalog()
+                        }
+                        continue
+                    }
+                    //handle verify Push
+                    if(catalogFactors[i].factorType == VerifyPush.factorType && catalogFactors[i].provider == VerifyPush.provider){
+                        this.catalog.verifyPush = catalogFactors[i]
+                        if(this.$refs.verifyPush){
+                            this.$refs.verifyPush.updateCatalog()
                         }
                         continue
                     }
@@ -122,14 +135,21 @@ export default {
                 const enrolledRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
                 var factors = enrolledRes.data
                 for(var i=0; i<factors.length; i++){
-                    //handle google factor
+                    //handle verify
                     if(factors[i].factorType == Verify.factorType && factors[i].provider == Verify.provider){
                         this.factors.verify = factors[i]
                         this.$refs.verify.updateFactors()
                         continue
                     }
+                    //handle verify push
+                    if(factors[i].factorType == VerifyPush.factorType && factors[i].provider == VerifyPush.provider){
+                        this.factors.verifyPush = factors[i]
+                        this.$refs.verifyPush.updateFactors()
+                        continue
+                    }
                     //handle google factor
                     if(factors[i].factorType == GoogleAuthenticator.factorType && factors[i].provider == GoogleAuthenticator.provider){
+                        console.log(factors[i])
                         this.factors.googleAuthenticator = factors[i]
                         this.$refs.googleAuthenticator.updateFactors()
                         continue
