@@ -119,15 +119,14 @@ export default {
                                     this.overlayMessage = "Activation request expired."
                                 }
                             } else{
-                                console.log(("success"))
                                 window.clearInterval(this.activationInterval)
                                 this.$parent.updateCatalog()
                                 this.$parent.updateFactors()  
                             }
                         } catch (err){
-                            console.log("error")
-                            console.log(err)
-                            //polling seems to return 400 when complete
+                            //TODO polling returns a 400 with the errorcode
+                            //"FactorAlreadyExists" when complete rather than
+                            //the documented factor details
                             window.clearInterval(this.activationInterval)
                             this.$parent.updateCatalog()
                             this.$parent.updateFactors()
