@@ -73,12 +73,33 @@ removeApi:
 	@cd ${API_DIR} && \
 	serverless remove -v
 
+.PHONY: createEnvLocal
+createEnvLocal: 
+	@cd ${TERRAFORM} && \
+	terraform output vue_env_dev > ../${SPA_DIR}/.env.development.local
+
+.PHONY: createVueEnv
+createVueEnv: createEnvLocal
+	@cd ${API_DIR} && \
+	printf %s "VUE_APP_API=" >> ../${SPA_DIR}/.env.development.local && \
+	serverless info --verbose | grep ServiceEndpoint | grep -o 'http.*' >> ../${SPA_DIR}/.env.development.local
+
 .PHONY: setupSpa
-setupSpa: 
+setupSpa: createVueEnv
 	@cd ${SPA_DIR} && \
 	npm install
 
 .PHONY: spa
 spa: setupSpa
+	@echo "Run 'npm run serve' to run Single Page App locally. " && \
+	echo "\tThen go to http://localhost:8081/ in your browser."
+
+#   Experimental - for CloudFront, S3, Route53 setup in AWS for the SPA
+#	@cd ${SPA_DIR} && \
+#	serverless deploy -v
+
+.PHONY: removeSpa
+removeSpa: 
 	@cd ${SPA_DIR} && \
-	serverless deploy -v
+	serverless remove -v && \
+	rm -rf node_modules dist
