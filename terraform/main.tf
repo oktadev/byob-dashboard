@@ -24,11 +24,13 @@ data "okta_group" "byob-users" {
 resource "okta_app_oauth" "okta-byob" {
   label                      = local.app_name
   type                       = "browser"
-  redirect_uris              = ["${var.app_url}/callback"]
+  redirect_uris              = ["${var.app_url}/oauth/callback"]
+  post_logout_redirect_uris  = ["${var.app_url}/oauth/callback"]
   grant_types                = ["authorization_code"]
   response_types             = ["code"]
   token_endpoint_auth_method = "none"
   issuer_mode                = "ORG_URL"
+  consent_method             = "TRUSTED"
 }
 
 # Create the App Assignment

@@ -3,8 +3,8 @@
 .serverless
 terraform.tfstate
 terraform.tfstate.backup
-/dist
-/node_modules
+dist
+node_modules
 byob-spa/node_modules
 
 *.tfvars
