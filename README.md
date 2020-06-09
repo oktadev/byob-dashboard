@@ -30,6 +30,12 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     ```
     npm install -g serverless
     ```
+    
+    Note: if you get WARN/ERR on MacOS, run:
+    ```
+    sudo npm install -g serverless
+    ```
+    
 3. Create a Named Profile in AWS. [Steps](https://docs.idp.rocks/setup/#create-named-profile-in-aws-cli)
 4. Enable Programmatic Access for Okta. [Steps](https://docs.idp.rocks/setup/#enable-programmatic-access-to-okta)
 
@@ -91,8 +97,10 @@ Navigate to the  [api folder](/byob-api) for more info.
     e.g. via npm:
     ```
     npm install @vue/cli -g
+    ```
     
-    //if you get WARN/ERR on Mac, run:
+    Note: if you get WARN/ERR on MacOS, run:
+    ```
     sudo npm install -g @vue/cli --unsafe-perm
     ```
 
