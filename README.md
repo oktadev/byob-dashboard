@@ -65,12 +65,12 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 #### Okta Setup
 * Use the provided Makefile:
     ```
-    make Okta
+    make okta
     ```
 
 * Or if you prefer not to use the Makefile, follow [these](terraform#run-terraform) steps.
 
-Head over to the [terraform](/terraform) folder for additioinal details.
+Head over to the [terraform](/terraform) folder for additional details.
 
 #### SPA APIs
 We've implemented user management (manage profile, password & factors) APIs using Serverless framework. 
