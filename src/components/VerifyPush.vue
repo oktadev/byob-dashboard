@@ -80,7 +80,6 @@ export default {
         },
         updateFactor(){
             if(this.$parent.factors && this.$parent.factors.verifyPush){
-                console.log("factor set")
                 this.factorId = this.$parent.factors.verifyPush.id
                 this.status = this.$parent.factors.verifyPush.status
                 this.device = this.$parent.factors.verifyPush.profile.name

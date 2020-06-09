@@ -37,6 +37,12 @@ exports.handler = function(event, context) {
         //retrieve security question list
         policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/users/' + uid + '/factors/questions');
         
+        //retrieve a user's groups
+        policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/users/' + uid + '/groups');
+        
+        //retrieve the policies
+        policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/policies/');
+        
         var builtPolicy = policy.build();
         return context.succeed(builtPolicy);
     })

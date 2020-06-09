@@ -15,6 +15,34 @@
                 @click:append="showCurrentPassword = !showCurrentPassword"
                 >
             </v-text-field>
+            <v-card
+                    v-if="complexity"
+                    class="mx-auto"
+                    max-width="400"
+                    tile>
+                    <v-list-item two-line>
+                    <v-list-item-content>
+                        <v-list-item-title class="password-rule">Password Requirements</v-list-item-title>
+                        <v-list-item-subtitle class="password-rule">Minimum length: {{complexity.minLength}}</v-list-item-subtitle>
+                        <v-list-item-subtitle v-if="complexity.hasLower" class="password-rule">One lowercase character</v-list-item-subtitle>
+                        <v-list-item-subtitle v-if="complexity.hasUpper" class="password-rule">One uppercase character</v-list-item-subtitle>
+                        <v-list-item-subtitle v-if="complexity.hasNumber" class="password-rule">One numberic character</v-list-item-subtitle>
+                        <v-list-item-subtitle v-if="complexity.hasSymbol" class="password-rule">One symbol</v-list-item-subtitle>
+                        <v-list-item-subtitle
+                        v-if="complexity.exclude_userName"
+                        class="password-rule">Does not contain  username</v-list-item-subtitle>
+                        <v-list-item-subtitle
+                        v-if="complexity.exclude_firstName"
+                        class="password-rule">Does not contain first name</v-list-item-subtitle>
+                        <v-list-item-subtitle
+                        v-if="complexity.exclude_lastName"
+                        class="password-rule">Does not contain last name</v-list-item-subtitle>
+                        <v-list-item-subtitle
+                        v-if="complexity.exclude_dictionary"
+                        class="password-rule">Not a common password</v-list-item-subtitle>        
+                    </v-list-item-content>
+                    </v-list-item>
+             </v-card>
             <v-text-field
                 v-model="newPassword"
                 label="New Password"
@@ -65,6 +93,12 @@
     </v-col>        
 </template>
 
+<style scoped>
+    .password-rule {
+        white-space: break-spaces;
+    }
+</style>
+
 <script>
 import axios from 'axios'
 
@@ -79,6 +113,17 @@ export default {
             showCurrentPassword: false,
             showNewPassword: false,
             showConfirmPassword: false,
+            complexity: {
+                minLength: undefined,
+                hasLower: undefined,
+                hasUpper: undefined,
+                hasNumber: undefined,
+                hasSymbol: undefined,
+                exclude_userName: undefined,
+                exclude_firstName: undefined,
+                exclude_LastName: undefined,
+                exclude_dictionary: undefined
+            },
             currentPasswordRules: [
                 v => !!v || 'Current Password is required',
             ],
@@ -93,7 +138,54 @@ export default {
             error: false
         }
     },
+    created(){
+        this.getComplexity()
+    },
     methods: {
+        async getComplexity(){
+            var user = await this.$auth.getUser()
+            const groupUrl = this.$config.api + '/api/v1/users/' + user.sub + '/groups'
+            const policyUrl = this.$config.api + '/api/v1/policies/?type=PASSWORD'
+
+            try {
+                const groups = await axios.get(groupUrl, {headers:{Authorization: 'Bearer '+await this.$auth.getAccessToken()}})
+                const policy = await axios.get(policyUrl, {headers:{Authorization: 'Bearer '+await this.$auth.getAccessToken()}})
+                //build an array of all the user's group ids
+                var usergroups =[]
+                groups.data.forEach(element => {
+                    usergroups.push(element.id)
+                });
+                
+                //search the policies for the first active policy which is
+                //applied to a group of which the user is a member
+                //groups are returned in sorted order so first occurance is
+                //applied
+                for (let i = 0; i < policy.data.length; i++) {
+                    const element = policy.data[i];
+                    if(element.status != "INACTIVE"){
+                        if(element.conditions.people.groups.include.some(r=>usergroups.indexOf(r)>=0)){
+                            this.complexity.minLength = element.settings.password.complexity.minLength
+                            this.complexity.hasLower = element.settings.password.complexity.minLowerCase > 0
+                            this.complexity.hasUpper = element.settings.password.complexity.minUpperCase > 0
+                            this.complexity.hasNumber = element.settings.password.complexity.minNumber > 0
+                            this.complexity.hasSymbol = element.settings.password.complexity.minSymbol > 0
+                            this.complexity.exclude_userName = element.settings.password.complexity.excludeUsername
+                            this.complexity.exclude_firstName = element.settings.password.complexity.excludeAttributes.includes("firstName")
+                            this.complexity.exclude_LastName = element.settings.password.complexity.excludeAttributes.includes("lastName")
+                            this.complexity.exclude_dictionary = element.settings.password.complexity.dictionary.common.exclude
+                            break
+                        }
+                    }                
+                }
+
+            } catch(err){
+                this.overlayMessage = 'Unable to retrieve password policy'
+                window.setTimeout(()=>{
+                        this.$refs.form.reset()
+                        this.overlay=false
+                    }, 600)
+            }
+        },
         async save() {
             this.saved = false
             this.error = false

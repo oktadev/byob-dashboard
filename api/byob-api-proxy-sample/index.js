@@ -11,20 +11,30 @@ exports.handler = async function(event, context, callback) {
     };
 
     const requestString = orgUrl + '/api/v1/' + event.pathParameters.proxy;
-    let requestBody = JSON.parse(event.body);
-
-    // IF updating user profile
-    if (RegExp('^users/[0-9a-zA-Z]+$').test(event.pathParameters.proxy) && requestBody['profile']) {
-        // Strip out "read only" profile attributes
-        let profile = requestBody.profile
-        await stripReadOnlyAttributes(orgUrl, apiKey, profile)
+    
+    let queryParams = null
+    if(event.queryStringParameters){
+        queryParams = event.queryStringParameters
     }
+    
+    let requestBody = null
+    if(event.body){
+        requestBody = JSON.parse(event.body);
+        // IF updating user profile
+        if (RegExp('^users/[0-9a-zA-Z]+$').test(event.pathParameters.proxy) && requestBody['profile']) {
+            // Strip out "read only" profile attributes
+            let profile = requestBody.profile
+            await stripReadOnlyAttributes(orgUrl, apiKey, profile)
+        }
+    }
+   
     try {
         let res = await axios({
             method: event.httpMethod,
             url: requestString,
             data: requestBody,
-            headers: {Authorization: 'SSWS ' + apiKey}});
+            params: queryParams,
+            headers: {Authorization: 'SSWS ' + apiKey, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         response.statusCode = res.status;
         response.body = JSON.stringify(res.data);
     } 
