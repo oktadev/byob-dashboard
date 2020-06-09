@@ -106,6 +106,9 @@ Navigate to the  [api folder](/byob-api) for more info.
 
 2. `cd` into `/byob-spa`, then:
 3. Run `npm install`
+
+   Note: if you get the error "gyp: No Xcode or CLT version detected!" on  macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
+
 4. Create env file `.env.development.local` (In that same `/byob-spa` directory. Note: there is an existing `.env` file. Do not touch that file; Add this `.local` in addition to it). Edit it in with the values below:
     ```
     VUE_APP_CLIENT_ID={{client_id}}
