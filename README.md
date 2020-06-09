@@ -91,6 +91,9 @@ Navigate to the  [api folder](/byob-api) for more info.
     e.g. via npm:
     ```
     npm install @vue/cli -g
+    
+    //if you get WARN/ERR on Mac, run:
+    sudo npm install -g @vue/cli --unsafe-perm
     ```
 
 2. `cd` into `/byob-spa`, then:
