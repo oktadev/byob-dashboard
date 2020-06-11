@@ -56,7 +56,7 @@
             <v-text-field
                 v-model="confirmNewPassword"
                 label="Confirm New Password"
-                :rules="passwordRules"
+                :rules="passwordConfirmationRules"
                 required
                 :type="showConfirmPassword ? 'text' : 'password'"
                 :append-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -120,16 +120,30 @@ export default {
                 hasNumber: undefined,
                 hasSymbol: undefined,
                 exclude_userName: undefined,
+                exclude_userName_value: undefined,
                 exclude_firstName: undefined,
-                exclude_LastName: undefined,
+                exclude_firstName_value: undefined,
+                exclude_lastName: undefined,
+                exclude_lastName_value: undefined,
                 exclude_dictionary: undefined
             },
             currentPasswordRules: [
-                v => !!v || 'Current Password is required',
+                v => !!v || 'Current password is required',
             ],
             passwordRules: [
-                v => !!v || 'New Password is required',
-                v2 => !!v2 || !(this.newPassword && this.confirmNewPassword && this.newPassword != this.confirmNewPassword) || "Passwords don't match"
+                v => !!v || 'New password is required',
+                v => (v && v.length > this.complexity.minLength) || "Password must be " + this.complexity.minLength + " characters.",
+                v => (!this.complexity.hasLower || v && !!v.match("[a-z]+")) || "Password must contain one lower case letter.",
+                v => (!this.complexity.hasUpper || v && !!v.match("[A-Z]+")) || "Password must contain one upper case letter.",
+                v => (!this.complexity.hasNumber || v && !!v.match("[0-9]+")) || "Password must contain one numberic character.",
+                v => (!this.complexity.hasSymbol || v && !!v.match('!|@|#|\\$|%|\\^|&|\\*')) || "Password must contain one symbol character.",
+                v => (!this.complexity.exclude_userName || v && (v.match(this.complexity.exclude_userName_value)==null)) || "Password must not contain username.",
+                v => (!this.complexity.exclude_firstName || v && (v.match(this.complexity.exclude_firstName_value)==null)) || "Password must not contain given name.",
+                v => (!this.complexity.exclude_lastName || v && (v.match(this.complexity.exclude_lastName_value)==null)) || "Password must not contain family name.",
+            ],
+            passwordConfirmationRules:[
+                v => !!v || 'Password confirmation is required',
+                v => (v && v == this.newPassword) || "Passwords don't match"
             ],
             processing: false,
             overlay: false,
@@ -169,10 +183,19 @@ export default {
                             this.complexity.hasUpper = element.settings.password.complexity.minUpperCase > 0
                             this.complexity.hasNumber = element.settings.password.complexity.minNumber > 0
                             this.complexity.hasSymbol = element.settings.password.complexity.minSymbol > 0
+                            
                             this.complexity.exclude_userName = element.settings.password.complexity.excludeUsername
                             this.complexity.exclude_firstName = element.settings.password.complexity.excludeAttributes.includes("firstName")
-                            this.complexity.exclude_LastName = element.settings.password.complexity.excludeAttributes.includes("lastName")
+                            this.complexity.exclude_lastName = element.settings.password.complexity.excludeAttributes.includes("lastName")
                             this.complexity.exclude_dictionary = element.settings.password.complexity.dictionary.common.exclude
+                            
+                            if(this.complexity.exclude_userName || this.complexity.exclude_lastName || this.complexity.exclude_firstName){
+                                var userinfo = await this.$auth.getUser()
+                                this.complexity.exclude_userName_value = userinfo.preferred_username
+                                this.complexity.exclude_firstName_value = userinfo.given_name
+                                this.complexity.exclude_lastName_value = userinfo.family_name
+                            }
+                            
                             break
                         }
                     }                
