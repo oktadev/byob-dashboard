@@ -1,9 +1,8 @@
 <template>
     <div>
-        <v-progress-linear :indeterminate="true" v-if="loading"></v-progress-linear>
         <template v-if="catalog.googleAuthenticator">
-            <!-- <WebAuthn v-show="false" ref="webauthn"></WebAuthn> -->
             <Verify ref="verify"></Verify>
+            <VerifyPush ref="verifyPush"></VerifyPush>
             <GoogleAuthenticator ref="googleAuthenticator"></GoogleAuthenticator>
             <SMS ref="sms"></SMS>
             <SecurityQuestion ref="securityQuestion"></SecurityQuestion>
@@ -17,12 +16,12 @@ import GoogleAuthenticator from '@/components/GoogleAuthenticator'
 import SMS from '@/components/SMS'
 import SecurityQuestion from '@/components/SecurityQuestion'
 import Verify from '@/components/Verify'
-// import WebAuthn from '@/components/WebAuthn'
+import VerifyPush from '@/components/VerifyPush'
 
 export default {
     name: 'factors',
     components:{
-        // WebAuthn,
+        VerifyPush,
         Verify,
         GoogleAuthenticator,
         SMS,
@@ -35,21 +34,20 @@ export default {
                 sms: undefined,
                 securityQuestion: undefined,
                 verify: undefined,
-                // webauthn: undefined,
+                verifyPush: undefined
             },
             catalog:{
                 googleAuthenticator: undefined,
                 sms: undefined,
                 securityQuestion: undefined,
                 verify: undefined,
-                // webauthn: undefined,
+                verifyPush: undefined
             },
             processing: false,
             overlay: false,
             saved: false,
             overlayMessage: undefined,
             error: false,
-            loading: true
         }
     },
     created(){
@@ -62,7 +60,6 @@ export default {
         },
         //Retrieve the factors which a user is eligable to enroll
         async updateCatalog(){
-            console.log("updateCatalog")
             this.error = false
             const accessToken = await this.$auth.getAccessToken()
             var user = await this.$auth.getUser()
@@ -70,25 +67,22 @@ export default {
             this.overlay=true
             try{
                 var url = this.$config.api + '/api/v1/users/' + user.sub + '/factors/catalog'
-                console.log("Calling url", url);
                 const catalogRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
-                this.loading = false;
                 var catalogFactors = catalogRes.data
                 for(var i=0; i<catalogFactors.length; i++){
-                    // handle webauthn
-                    // if (catalogFactors[i].factorType === WebAuthn.factorType && catalogFactors[i].provider === WebAuthn.provider) {
-                    //     this.catalog.webauthn = catalogFactors[i]
-                    //     if (this.$refs.webauthn) {
-                    //         this.$refs.webauthn.updateCatalog()
-                    //     }
-                    //     continue;
-                    // }
-
                     //handle verify
                     if(catalogFactors[i].factorType == Verify.factorType && catalogFactors[i].provider == Verify.provider){
                         this.catalog.verify = catalogFactors[i]
                         if(this.$refs.verify){
                             this.$refs.verify.updateCatalog()
+                        }
+                        continue
+                    }
+                    //handle verify Push
+                    if(catalogFactors[i].factorType == VerifyPush.factorType && catalogFactors[i].provider == VerifyPush.provider){
+                        this.catalog.verifyPush = catalogFactors[i]
+                        if(this.$refs.verifyPush){
+                            this.$refs.verifyPush.updateCatalog()
                         }
                         continue
                     }
@@ -141,14 +135,21 @@ export default {
                 const enrolledRes = await axios.get(url, {headers: {Authorization: 'Bearer ' + accessToken}})
                 var factors = enrolledRes.data
                 for(var i=0; i<factors.length; i++){
-                    //handle google factor
+                    //handle verify
                     if(factors[i].factorType == Verify.factorType && factors[i].provider == Verify.provider){
                         this.factors.verify = factors[i]
                         this.$refs.verify.updateFactors()
                         continue
                     }
+                    //handle verify push
+                    if(factors[i].factorType == VerifyPush.factorType && factors[i].provider == VerifyPush.provider){
+                        this.factors.verifyPush = factors[i]
+                        this.$refs.verifyPush.updateFactors()
+                        continue
+                    }
                     //handle google factor
                     if(factors[i].factorType == GoogleAuthenticator.factorType && factors[i].provider == GoogleAuthenticator.provider){
+                        console.log(factors[i])
                         this.factors.googleAuthenticator = factors[i]
                         this.$refs.googleAuthenticator.updateFactors()
                         continue

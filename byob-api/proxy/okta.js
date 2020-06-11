@@ -2,51 +2,49 @@ const axios = require("axios");
 const apiKey = process.env.OKTA_API_KEY;
 const orgUrl = process.env.ISSUER.split("/oauth2")[0];
 
-exports.handler = async function (event, context, callback) {
-  const response = {
-    isBase64Encoded: false,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-    },
-  };
+exports.handler = async function(event, context, callback) {
+    const response = {
+        isBase64Encoded: false,
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    };
 
-  const requestString = orgUrl + "/api/v1/" + event.pathParameters.proxy;
-  let requestBody = JSON.parse(event.body);
+    const requestString = orgUrl + '/api/v1/' + event.pathParameters.proxy;
+    
+    let queryParams = null
+    if(event.queryStringParameters){
+        queryParams = event.queryStringParameters
+    }
+    
+    let requestBody = null
+    if(event.body){
+        requestBody = JSON.parse(event.body);
+        // IF updating user profile
+        if (RegExp('^users/[0-9a-zA-Z]+$').test(event.pathParameters.proxy) && requestBody['profile']) {
+            // Strip out "read only" profile attributes
+            let profile = requestBody.profile
+            await stripReadOnlyAttributes(orgUrl, apiKey, profile)
+        }
+    }
+   
+    try {
+        let res = await axios({
+            method: event.httpMethod,
+            url: requestString,
+            data: requestBody,
+            params: queryParams,
+            headers: {Authorization: 'SSWS ' + apiKey, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        response.statusCode = res.status;
+        response.body = JSON.stringify(res.data);
+    } 
+    catch(err) {
+        response.statusCode = err.response.status;
+        response.body = JSON.stringify(err.response.data);
+    }
+    callback(null, response);
+}
 
-  // IF updating user profile
-  if (
-    RegExp("^users/[0-9a-zA-Z]+$").test(event.pathParameters.proxy) &&
-    requestBody["profile"]
-  ) {
-    // Strip out "read only" profile attributes
-    let profile = requestBody.profile;
-    await stripReadOnlyAttributes(orgUrl, apiKey, profile);
-  }
-  try {
-    console.log(
-      "Request",
-      JSON.stringify({
-        method: event.httpMethod,
-        url: requestString,
-        data: requestBody,
-        headers: { Authorization: "SSWS " + apiKey },
-      })
-    );
-    let res = await axios({
-      method: event.httpMethod,
-      url: requestString,
-      data: requestBody,
-      headers: { Authorization: "SSWS " + apiKey },
-    });
-    console.log("Response", res);
-    response.statusCode = res.status;
-    response.body = JSON.stringify(res.data);
-  } catch (err) {
-    response.statusCode = err.response.status;
-    response.body = JSON.stringify(err.response.data);
-  }
-  callback(null, response);
-};
 
 async function stripReadOnlyAttributes(orgUrl, apiKey, profile) {
   try {
