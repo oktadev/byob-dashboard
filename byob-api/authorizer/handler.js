@@ -10,9 +10,9 @@ const oktaJwtVerifier = new OktaJwtVerifier({
 exports.auth = function(event, context) {
   const accessTokenString = event.authorizationToken.split(" ")[1];
   oktaJwtVerifier
-    .verifyAccessToken(accessTokenString, process.env.AUD)
+    .verifyAccessToken(accessTokenString, process.env.AUDIENCE)
     .then((jwt) => {
-        var apiOptions = {};
+        let apiOptions = {};
         const arnParts = event.methodArn.split(':');
         const apiGatewayArnPart = arnParts[5].split('/');
         const awsAccountId = arnParts[4];
@@ -25,6 +25,7 @@ exports.auth = function(event, context) {
          * We explicitly whitelist the http POST paths containing "uid" only
          */
         const uid = jwt.claims.uid;
+
         // allow update own profile
         policy.allowMethod(AuthPolicy.HttpVerb.POST, '/api/v1/users/' + uid);
         // allow change own password
@@ -47,7 +48,8 @@ exports.auth = function(event, context) {
         //retrieve the policies
         policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/policies/');
         
-        var builtPolicy = policy.build();
+        const builtPolicy = policy.build();
+        console.log(builtPolicy.policyDocument.Statement);
         return context.succeed(builtPolicy);
     })
     .catch((err) => {

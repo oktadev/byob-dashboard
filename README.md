@@ -48,35 +48,46 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 ### Environment Variables
 
-- Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
+1. Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
 
-  ```
-  org_name       = "<org subdomain>"
-  base_url       = "<oktapreview.com || okta.com>"
-  api_token      = "<OKTA_API_TOKEN>"
-  app_url        = "http://localhost:8081"
-  environment    = "dev"
-  aws_region     = "us-east-1"
-  aws_profile    = "(see Prerequisites Step 4.)"
-  aws_ssm_prefix = "byob"
-  recaptcha-site-secret = "<Google Recaptcha Site Secret>"
-  ```
+    ```
+    org_name       = "<org subdomain>"
+    base_url       = "<oktapreview.com || okta.com>"
+    api_token      = "<OKTA_API_TOKEN>"
+    app_url        = "http://localhost:8081"
+    environment    = "dev"
+    aws_region     = "us-east-1"
+    aws_profile    = "(see Prerequisites Step 4.)"
+    aws_ssm_prefix = "byob"
+    recaptcha-site-secret = "<Google Recaptcha Site Secret>"
+    ```
 
-  Where the above variables are:
+    Where the above variables are:
 
-  | Variable              | Description                                                                | Default Value           |
-  | --------------------- | :------------------------------------------------------------------------- | ----------------------- |
-  | org_name              | Okta Org subdomain name (e.g. "atko")                                      |                         |
-  | base_url              | Base URL for the Okta org (okta.com or oktapreview.com)                    | "okta.com"              |
-  | api_token             | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)                |                         |
-  | app_url               | Base URL for the SPA.                                                      | "http://localhost:8081" |
-  | environment           | Stage configured in API Gateway (dev, prod, ...)                           | "dev"                   |
-  | aws_region            | Region to deploy AWS components.                                           | "us-east-1"             |
-  | aws_profile           | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
-  | aws_ssm_prefix        | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
-  | recaptcha-site-secret | Google Recaptcha Site Secret                                               |                         |
+    | Variable              | Description                                                                | Default Value           |
+    | --------------------- | :------------------------------------------------------------------------- | ----------------------- |
+    | org_name              | Okta Org subdomain name (e.g. "atko")                                      |                         |
+    | base_url              | Base URL for the Okta org (okta.com or oktapreview.com)                    | "okta.com"              |
+    | api_token             | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)                |                         |
+    | app_url               | Base URL for the SPA.                                                      | "http://localhost:8081" |
+    | environment           | Stage configured in API Gateway (dev, prod, ...)                           | "dev"                   |
+    | aws_region            | Region to deploy AWS components.                                           | "us-east-1"             |
+    | aws_profile           | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
+    | aws_ssm_prefix        | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
+    | recaptcha-site-secret | Google Recaptcha Site Secret                                               |                         |
 
-- Once `/terraform/terraform.tfvars` is populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
+2. Copy the file `/byob-api/.env.json.template` into `.env.json` and edit it with corresponding values from the previous step:
+    ```js
+    {
+        "AWS_PROFILE": "<aws_profile from above>",
+        "AWS_REGION": "<aws_region from above>",
+        "ENVIRONMENT": "<environment from above>"
+    }
+    ```
+
+
+
+Once both `/terraform/terraform.tfvars` and `/byob-api/.env.json.local` are populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
 
 #### Okta Setup
 
@@ -142,7 +153,7 @@ Navigate to the [api folder](/byob-api) for more info.
 
 5. The following command compiles and hot-reloads for development environment
    `npm run serve`
-6. Open your browser to `http://localhost:8080` and login
+6. Open your browser to `http://localhost:8081` and login
 
 #### Compile and minify for production
 

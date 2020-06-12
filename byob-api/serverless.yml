@@ -7,10 +7,10 @@ plugins:
   - serverless-offline
 
 custom:
-  #env: ${file(./${self:provider.stage}.env.json)}
-  region: ${opt:region, self:provider.region}
-  stage: ${opt:stage, self:provider.stage}
-  ssmPrefix: byob # This should match the prefix in the terraform script
+  env: ${file(./.env.json)}
+  region: ${self:provider.region}
+  stage: ${self:provider.stage}
+  ssmPrefix: byob # This should match what's in /terraform/terraform.tfvars
   ssmParameters:
     OKTA_ISSUER: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/issuer-uri"
     OKTA_AUDIENCE: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/audience"
@@ -23,9 +23,9 @@ outputs:
 provider:
   name: aws
   runtime: nodejs10.x
-  profile: serverless-okta
-  region: us-east-2
-  stage: dev
+  profile: ${self:custom.env.AWS_PROFILE} # This should match what's in /terraform/terraform.tfvars
+  region: ${self:custom.env.AWS_REGION}   # This should match what's in /terraform/terraform.tfvars
+  stage: ${self:custom.env.ENVIRONMENT}   # This should match what's in /terraform/terraform.tfvars
   environment:
     # Set the SSM Parameter directly as an environment variable
     ISSUER: ${ssm:${self:custom.ssmParameters.OKTA_ISSUER}}
@@ -64,7 +64,10 @@ functions:
           path: /api/v1/{proxy+}
           method: ANY
           cors: true
-
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
 resources:
   Outputs:
     ApiUrl:
