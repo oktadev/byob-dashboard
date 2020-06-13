@@ -62,7 +62,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     recaptcha-site-secret = "<Google Recaptcha Site Secret>"
     ```
 
-    Where the above variables are:
+    Where the above variables are: <a name="variable-names"></a>
 
     | Variable              | Description                                                                | Default Value           |
     | --------------------- | :------------------------------------------------------------------------- | ----------------------- |
