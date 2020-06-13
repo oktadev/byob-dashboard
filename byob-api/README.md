@@ -28,7 +28,7 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
     ```
 ---
 
-Terraform added parameters in the AWS Systems Manager Parameter Store. If you did not run terraform and manually configured Okta, the following values in `serverless.yml` need to be re-referenced. These are the same values described [here](#variable-names)
+Terraform added parameters in the AWS Systems Manager Parameter Store. If you did not run terraform and manually configured Okta, the following values in `serverless.yml` need to be re-referenced. These are the same values described [here](https://github.com/oktadeveloper/byob-dashboard#variable-names)
 ```
 custom:
   region: ${opt:region, self:provider.region}
