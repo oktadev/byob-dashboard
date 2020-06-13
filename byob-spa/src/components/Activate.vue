@@ -136,7 +136,7 @@ export default {
       );
       if (res.status == 200) {
         const oktaAuth = new AuthJS({
-          url: this.$config.oidc.issuer.split("/oauth2/")[0]
+          issuer: this.$config.oidc.issuer.split("/oauth2/")[0]
         });
         const self = this;
         oktaAuth
@@ -149,7 +149,7 @@ export default {
               sessionToken: transaction.sessionToken
             });
           })
-          .fail(function(err) {
+          .catch(function(err) {
             console.error(err);
           });
       }

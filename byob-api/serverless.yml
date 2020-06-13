@@ -22,7 +22,7 @@ outputs:
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs12.x
   profile: ${self:custom.env.AWS_PROFILE} # This should match what's in /terraform/terraform.tfvars
   region: ${self:custom.env.AWS_REGION}   # This should match what's in /terraform/terraform.tfvars
   stage: ${self:custom.env.ENVIRONMENT}   # This should match what's in /terraform/terraform.tfvars

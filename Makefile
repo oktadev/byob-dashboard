@@ -58,8 +58,13 @@ destroyOkta: destroyOktaPlan
 	@cd ${TERRAFORM} && \
 	terraform apply -auto-approve okta.delete.tfplan
 
+.PHONY: createEnvJson
+createEnvJson: 
+	@cd ${TERRAFORM} && \
+	terraform output api_env_json > ../${API_DIR}/.env.json
+
 .PHONY: setupApi
-setupApi: 
+setupApi: createEnvJson
 	@cd ${API_DIR} && \
 	npm install
 
@@ -73,6 +78,10 @@ removeApi:
 	@cd ${API_DIR} && \
 	serverless remove -v
 
+
+# ========================================================================
+# TODO: Make deploy SPA. Everything below this line
+# ========================================================================
 .PHONY: createEnvLocal
 createEnvLocal: 
 	@cd ${TERRAFORM} && \

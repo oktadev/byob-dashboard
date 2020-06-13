@@ -16,7 +16,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
 ## Manually Configure Okta
 1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**
 2. Click **Next**, then enter an Application **Name**. Then:
-   * Set Base URIs to `http://localhost:8081/` (it should already be set by default)
+   * Set Base URIs to `http://localhost:8081/`
    * Add an entry in *Redirect URIs*: `http://localhost:8081/oauth/callback`
    * Leave the default setting, Group assignments = **Everyone**
    * Select **Authorization Code** and deselect the default **Implicit** checkbox

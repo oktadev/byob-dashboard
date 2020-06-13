@@ -48,7 +48,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 ### Environment Variables
 
-1. Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
+* Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
 
     ```
     org_name       = "<org subdomain>"
@@ -76,18 +76,8 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     | aws_ssm_prefix        | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
     | recaptcha-site-secret | Google Recaptcha Site Secret                                               |                         |
 
-2. Copy the file `/byob-api/.env.json.template` into `.env.json` and edit it with corresponding values from the previous step:
-    ```js
-    {
-        "AWS_PROFILE": "<aws_profile from above>",
-        "AWS_REGION": "<aws_region from above>",
-        "ENVIRONMENT": "<environment from above>"
-    }
-    ```
 
-
-
-Once both `/terraform/terraform.tfvars` and `/byob-api/.env.json.local` are populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
+Once `/terraform/terraform.tfvars` is populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
 
 #### Okta Setup
 

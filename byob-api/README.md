@@ -7,16 +7,28 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
 
 **If you've decided not to use the Makefile, deploy using these steps:**
 
-## Prerequisites
-* Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
+1. **(Prereq)** Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
     e.g. via npm:
     ```
     npm install -g serverless
     ```
 
-## Deploy
-* Update the `serverless.yml` file with your environment variables:
+2. Copy the file `/byob-api/.env.json.template` into `.env.json` and edit it with corresponding values from `/terraform/terraform.tfvars`:
+    ```js
+    {
+        "AWS_PROFILE": "<aws_profile>",
+        "AWS_REGION": "<aws_region>",
+        "ENVIRONMENT": "<environment>"
+    }
+    ```
+3. Run the serverless deploy command
+    ```
+    sls deploy
+    ```
+---
+
+Terraform added parameters in the AWS Systems Manager Parameter Store. If you did not run terraform and manually configured Okta, the following values in `serverless.yml` need to be re-referenced. These are the same values described [here](../#environment-variables)
 ```
 custom:
   region: ${opt:region, self:provider.region}
@@ -30,7 +42,3 @@ custom:
     RECAPTCHA_SITE_SECRET: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/recaptcha-site-secret"
 ```
 
-* Run the serverless deploy command
-    ```
-    sls deploy
-    ```
