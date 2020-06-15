@@ -33,7 +33,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
    e.g. via npm:
    
-   Navigate to the /byob-dashboard folder and run:
+   cd to the /byob-dashboard folder and run:
 
    ```
    npm install -g serverless
@@ -85,7 +85,7 @@ Once `/terraform/terraform.tfvars` is populated correctly, you can run the scrip
 
 - Use the provided Makefile
 
-Navigate to the /byob-dashboard folder (that contains the Makefile) and run:
+cd to the /byob-dashboard folder (that contains the Makefile) and run:
 
   ```
   make okta
