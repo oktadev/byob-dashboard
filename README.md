@@ -81,7 +81,9 @@ Once `/terraform/terraform.tfvars` is populated correctly, you can run the scrip
 
 #### Okta Setup
 
-- Use the provided Makefile:
+- Use the provided Makefile
+
+Navigate to the folder containing the Makefile and run:
 
   ```
   make okta
