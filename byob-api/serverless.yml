@@ -8,15 +8,7 @@ plugins:
 
 custom:
   env: ${file(./.env.json)}
-  region: ${self:provider.region}
-  stage: ${self:provider.stage}
-  ssmPrefix: byob # This should match what's in /terraform/terraform.tfvars
-  ssmParameters:
-    OKTA_ISSUER: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/issuer-uri"
-    OKTA_AUDIENCE: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/audience"
-    OKTA_CLIENT_ID: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/client-id"
-    OKTA_API_TOKEN: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/api-token"
-    RECAPTCHA_SITE_SECRET: "/${self:custom.ssmPrefix}/okta/${self:custom.stage}/recaptcha-site-secret"
+  ssmPrefix: ${self:custom.env.AWS_SSM_PREFIX}
 
 outputs:
 
@@ -28,13 +20,12 @@ provider:
   stage: ${self:custom.env.ENVIRONMENT}   # This should match what's in /terraform/terraform.tfvars
   environment:
     # Set the SSM Parameter directly as an environment variable
-    ISSUER: ${ssm:${self:custom.ssmParameters.OKTA_ISSUER}}
-    AUDIENCE: ${ssm:${self:custom.ssmParameters.OKTA_AUDIENCE}}
-    OKTA_CLIENT_ID: ${ssm:${self:custom.ssmParameters.OKTA_CLIENT_ID}}
+    ISSUER: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/issuer-uri}
+    AUDIENCE: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/audience}
+    OKTA_CLIENT_ID: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/client-id}
 
     #To-Do: Set SecureString parameter name in environment variable, not the actual value.
-    OKTA_API_KEY: ${ssm:${self:custom.ssmParameters.OKTA_API_TOKEN}~true}
-    RECAPTCHA_SITE_SECRET: ${ssm:${self:custom.ssmParameters.RECAPTCHA_SITE_SECRET}~true}
+    OKTA_API_KEY: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/api-token~true}
 
   # To-Do: IAM Policy to Read SSM Parameters
   # iamRoleStatementsInherit: true
@@ -49,13 +40,13 @@ functions:
     handler: authorizer/handler.auth
     cors: true
 
-  register:
-    handler: registration/register.handler
-    events:
-      - http:
-          path: /register
-          method: POST
-          cors: true
+ # register:
+ #   handler: registration/register.handler
+ #   events:
+ #     - http:
+ #         path: /register
+ #         method: POST
+ #         cors: true
 
   proxy:
     handler: proxy/okta.handler
@@ -77,4 +68,4 @@ resources:
           - ""
           - - "https://"
             - Ref: ApiGatewayRestApi
-            - ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}"
+            - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"

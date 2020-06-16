@@ -59,7 +59,6 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     aws_region     = "us-east-1"
     aws_profile    = "(see Prerequisites Step 4.)"
     aws_ssm_prefix = "byob"
-    recaptcha-site-secret = "<Google Recaptcha Site Secret>"
     ```
 
     Where the above variables are: <a name="variable-names"></a>
@@ -74,7 +73,6 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     | aws_region            | Region to deploy AWS components.                                           | "us-east-1"             |
     | aws_profile           | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
     | aws_ssm_prefix        | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
-    | recaptcha-site-secret | Google Recaptcha Site Secret                                               |                         |
 
 
 Once `/terraform/terraform.tfvars` is populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
@@ -142,7 +140,9 @@ Navigate to the [api folder](/byob-api) for more info.
    | VUE_APP_API | The api base url of the API that was deployed in [SPA APIs step](#spa-apis) |
 
 5. The following command compiles and hot-reloads for development environment
-   `npm run serve`
+   ```
+   npm run serve
+   ```
 6. Open your browser to `http://localhost:8081` and login
 
 #### Compile and minify for production

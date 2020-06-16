@@ -44,8 +44,7 @@ planOkta:
 .PHONY: okta
 okta: planOkta
 	@cd ${TERRAFORM} && \
-	terraform apply -auto-approve okta.setup.tfplan && \
-	terraform output
+	terraform apply -auto-approve okta.setup.tfplan
 
 .PHONY: destroyOktaPlan
 destroyOktaPlan:
@@ -59,7 +58,7 @@ destroyOkta: destroyOktaPlan
 	terraform apply -auto-approve okta.delete.tfplan
 
 .PHONY: createEnvJson
-createEnvJson: 
+createEnvJson:
 	@cd ${TERRAFORM} && \
 	terraform output api_env_json > ../${API_DIR}/.env.json
 

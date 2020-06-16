@@ -4,7 +4,8 @@ output "api_env_json" {
   {
   "AWS_PROFILE": "${var.aws_profile}",
   "AWS_REGION": "${var.aws_region}",
-  "ENVIRONMENT": "${var.environment}"    
+  "ENVIRONMENT": "${var.environment}",
+  "AWS_SSM_PREFIX": "${var.aws_ssm_prefix}"
   }
 EOF
 }

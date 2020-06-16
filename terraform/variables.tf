@@ -27,7 +27,6 @@ variable "aws_ssm_prefix" {
   default = "byob"
 }
 
-variable "recaptcha_site_secret" {
-
-}
+# variable "recaptcha_site_secret" {
+# }
 

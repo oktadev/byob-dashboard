@@ -2,6 +2,11 @@
 #    Oauth2 SPA
 #    Custom authorization server for SPA
 
+# Local variables
+locals {
+  app_name = "byob-dashboard"
+}
+
 # Setup Okta Tenant
 provider "okta" {
   org_name  = var.org_name
@@ -15,17 +20,12 @@ data "okta_group" "byob-users" {
   name = "Everyone"
 }
 
-# Get default IDP Policy
-# data "okta_default_policy" "idp_policy" {
-#   type = "IDP_DISCOVERY"
-# }
-
 # Create OAuth2 SPA App
 resource "okta_app_oauth" "okta-byob" {
   label                      = local.app_name
   type                       = "browser"
   redirect_uris              = ["${var.app_url}/oauth/callback"]
-  post_logout_redirect_uris  = ["${var.app_url}/oauth/callback"]
+  post_logout_redirect_uris  = ["${var.app_url}/"]
   grant_types                = ["authorization_code"]
   response_types             = ["code"]
   token_endpoint_auth_method = "none"
@@ -145,14 +145,5 @@ output "okta_auth_server_id" {
 
 output "okta_auth_server_issuer_uri" {
   value = "https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-byob.id}"
-}
-
-# output "okta_idp_policy" {
-#   value = "${data.okta_default_policy.idp_policy.id}"
-# }
-
-# Local variables
-locals {
-  app_name = "byob-dashboard"
 }
 
