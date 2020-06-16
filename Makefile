@@ -10,6 +10,7 @@ help:
 TERRAFORM_VERSION := $(shell terraform --version 2>/dev/null)
 SERVERLESS_VERSION := $(shell serverless -v 2>/dev/null)
 AWSCLI_VERSION := $(shell aws --version 2>/dev/null)
+VUECLI_VERSION := $(shell vue --version 2>/dev/null)
 
 check:
 ifdef TERRAFORM_VERSION
@@ -26,6 +27,11 @@ ifdef AWSCLI_VERSION
 	@echo "Found $(AWSCLI_VERSION)"
 else
 	@echo "`aws` not found. Please see: https://docs.idp.rocks/setup/#install-aws-cli for details. "
+endif
+ifdef VUECLI_VERSION
+	@echo "Found $(VUECLI_VERSION)"
+else
+	@echo "`vue` CLI not found. Please see: https://docs.idp.rocks/setup/#install-vue-cli for details. "
 endif
 
 TERRAFORM-exists: ; @which terraform > /dev/null

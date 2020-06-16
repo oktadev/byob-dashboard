@@ -25,15 +25,16 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 ### Prerequisites
 
-1. **macOS Catalina issues:** You must be able to run `npm install`. 
-    * The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
-    * If you are getting the error *"gyp: No Xcode or CLT version detected!"* on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
+1. **macOS Catalina issues:** You must be able to run `npm install`.
+
+   - The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
+   - If you are getting the error _"gyp: No Xcode or CLT version detected!"_ on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
 
 2. Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
 3. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
    e.g. via npm:
-   
+
    cd to the /byob-dashboard folder and run:
 
    ```
@@ -59,60 +60,86 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
    ```
    sudo npm install -g @vue/cli --unsafe-perm
    ```
+
 5. Create a Named Profile in AWS. [Steps](https://docs.idp.rocks/setup/#create-named-profile-in-aws-cli)
 6. Enable Programmatic Access for Okta. [Steps](https://docs.idp.rocks/setup/#enable-programmatic-access-to-okta)
 
 ### Environment Variables
 
-* Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
+- Copy the file `/terraform/terraform.tfvars.template` into `/terraform/terraform.tfvars` and edit it with your Org variables:
 
-    ```
-    org_name       = "<org subdomain>"
-    base_url       = "<oktapreview.com || okta.com>"
-    api_token      = "<OKTA_API_TOKEN>"
-    app_url        = "http://localhost:8081"
-    environment    = "dev"
-    aws_region     = "us-east-1"
-    aws_profile    = "(see Prerequisites Step 4.)"
-    aws_ssm_prefix = "byob"
-    ```
+  ```
+  org_name       = "<org subdomain>"
+  base_url       = "<oktapreview.com || okta.com>"
+  api_token      = "<OKTA_API_TOKEN>"
+  app_url        = "http://localhost:8081"
+  environment    = "dev"
+  aws_region     = "us-east-1"
+  aws_profile    = "(see Prerequisites Step 4.)"
+  aws_ssm_prefix = "byob"
+  ```
 
-    Where the above variables are: <a name="variable-names"></a>
+  Where the above variables are: <a name="variable-names"></a>
 
-    | Variable              | Description                                                                | Default Value           |
-    | --------------------- | :------------------------------------------------------------------------- | ----------------------- |
-    | org_name              | Okta Org subdomain name (e.g. "atko")                                      |                         |
-    | base_url              | Base URL for the Okta org (okta.com or oktapreview.com)                    | "okta.com"              |
-    | api_token             | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)                |                         |
-    | app_url               | Base URL for the SPA.                                                      | "http://localhost:8081" |
-    | environment           | Stage configured in API Gateway (dev, prod, ...)                           | "dev"                   |
-    | aws_region            | Region to deploy AWS components.                                           | "us-east-1"             |
-    | aws_profile           | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
-    | aws_ssm_prefix        | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
+  | Variable       | Description                                                                | Default Value           |
+  | -------------- | :------------------------------------------------------------------------- | ----------------------- |
+  | org_name       | Okta Org subdomain name (e.g. "atko")                                      |                         |
+  | base_url       | Base URL for the Okta org (okta.com or oktapreview.com)                    | "okta.com"              |
+  | api_token      | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)                |                         |
+  | app_url        | Base URL for the SPA.                                                      | "http://localhost:8081" |
+  | environment    | Stage configured in API Gateway (dev, prod, ...)                           | "dev"                   |
+  | aws_region     | Region to deploy AWS components.                                           | "us-east-1"             |
+  | aws_profile    | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
+  | aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
 
 ---
 
 ## Make
-Once `/terraform/terraform.tfvars` is populated correctly, run Make:
+
+Once `/terraform/terraform.tfvars` is populated correctly, run:
+
+```
+make check
+```
+
+This will check if the pre-requisites and print out the version numbers installed on your machine.
+
+On a Mac, this is a sample output:
+
+```
+$ make check
+Found Terraform v0.12.26
+Found Serverless: Framework Core: 1.72.0 Plugin: 3.6.13 SDK: 2.3.1 Components: 2.30.12
+Found aws-cli/2.0.8 Python/3.7.4 Darwin/19.4.0 botocore/2.0.0dev12
+Found @vue/cli 4.3.1
+```
+
+If you dont see any error messages, you can run `make all`.
+
 ```
 make all
 ```
+
 The above will:
+
 1. Run the provided Terraform scripts to configure your Okta Org
 2. Deploy the API using Serverless
 3. Create the local env file (`.env.development.local`) for the SPA
 
 If you didn't see any errors, you're ready to go. `cd` into the `byob-spa` folder and run
+
 ```
 npm run serve
 ```
+
 The, open your browser to `http://localhost:8081` and login
 
 ---
 
 ## Step-by-step Options
+
 If you would rather do things step by step, do not run `make all`. Deploying this project has 3 parts:
+
 1. Run the provided Terraform scripts. Click [here](terraform#okta-setup) for next steps.
 2. Deploy the API. Click [here](byob-api#serverless) for next steps.
 3. Bring up the spa on localhost. Click [here](byob-spa#make) for next steps.
-
