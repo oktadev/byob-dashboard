@@ -31,7 +31,9 @@
 
 ---
 
-## Manual
+## Manual Setup
+**If you prefer not to use the makefile, then follow these steps:**
+
 1. `cd` into `/byob-spa`, then:
 2. Run `npm install`
 3. Create env file `.env.development.local` (In that same `/byob-spa` directory. Note: there is an existing `.env` file. Do not touch that file; Add this `.local` in addition to it). Edit it in with the values below:
@@ -47,7 +49,7 @@
    | --- |:------------- |
    | VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
    | VUE_APP_ISSUER | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
-   | VUE_APP_API | The api base url of the API that was deployed in [SPA APIs step](#spa-apis) |
+   | VUE_APP_API | The api base url of the API that was deployed |
 
 4. The following command compiles and hot-reloads for development environment
    ```
