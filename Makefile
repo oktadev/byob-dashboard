@@ -5,7 +5,7 @@ SPA_DIR ?= byob-spa
 
 help:
 	@echo "Usage:\n\tmake okta\n\tmake api\n\tmake spa"
-	@echo "\tmake all
+	@echo "\tmake all"
 
 TERRAFORM_VERSION := $(shell terraform --version 2>/dev/null)
 SERVERLESS_VERSION := $(shell serverless -v 2>/dev/null)
@@ -77,10 +77,6 @@ removeApi:
 	@cd ${API_DIR} && \
 	serverless remove -v
 
-
-# ========================================================================
-# TODO: Make deploy SPA. Everything below this line
-# ========================================================================
 .PHONY: createEnvLocal
 createEnvLocal: 
 	@cd ${TERRAFORM} && \
@@ -102,6 +98,9 @@ spa: setupSpa
 	@echo "Run 'npm run serve' to run Single Page App locally. " && \
 	echo "\tThen go to http://localhost:8081/ in your browser."
 
+# ========================================================================
+# TODO: Make deploy SPA. 
+# ========================================================================
 #   Experimental - for CloudFront, S3, Route53 setup in AWS for the SPA
 #	@cd ${SPA_DIR} && \
 #	serverless deploy -v
@@ -111,3 +110,18 @@ removeSpa:
 	@cd ${SPA_DIR} && \
 	serverless remove -v && \
 	rm -rf node_modules dist
+
+
+.PHONY: byobOkta
+byobOkta: okta
+	@echo "1. Terraform Okta Complete"
+	@echo "2. Env variables for API written to AWS Systems Manager"
+
+.PHONY: byobApi
+byobApi: byobOkta
+	@echo "Now Deploying Serverless..."
+
+.PHONY: all
+all: byobApi
+	@echo "Make complete."
+

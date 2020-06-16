@@ -5,16 +5,27 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
 
 ---
 
-**If you are familiar with Serverless, deploy using these steps:** <a name="deploy"></a>
-
-1. **(Prereq)** Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
-
+## Prerequisites
+* Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
     e.g. via npm:
     ```
     npm install -g serverless
     ```
 
-2. Copy the file `/byob-api/.env.json.template` into `.env.json` and edit it with corresponding values from `/terraform/terraform.tfvars`:
+## Serverless
+Use the provided Makefile to deploy the api with serverless. From the `/byob-dashboard` (root) folder (that contains the Makefile), run
+```
+make api
+```
+Stop here. You are done deploying the API.
+
+---
+
+## Optional
+If you prefer not to use the Makefile, follow these steps:
+
+1. `cd` into the `byob-api` folder, then
+2. Copy the file `.env.json.template` into `.env.json` (note there should be a leading `.`) and edit it with corresponding values from `/terraform/terraform.tfvars`:
     ```js
     {
         "AWS_PROFILE": "<aws_profile>",
@@ -23,9 +34,9 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
         "AWS_SSM_PREFIX": "<aws_ssm_prefix>"
     }
     ```
-3. Populate AWS SSM parameters
-    * If you ran Terraform, skip this step.
-    * If you have not run Terraform, add the ssm parameters manually: From AWS console, navigate to Systems Manager > Parameter Store. Add the following parameters in your desired region:
+3. Populate AWS SSM parameters:
+    * IF YOU DID RUN Terraform, SKIP THIS STEP.
+    * If you did NOT not run Terraform, add the ssm parameters manually: From AWS console, navigate to **Systems Manager > Parameter Store**. Add the following parameters in your desired region:
 
     | parameter             | type         | value |
     | --------------------- | ------------ | ----- |
@@ -36,7 +47,7 @@ The Single Page App (SPA) would need to call Okta APIs (*For Example, to update 
 
     ---
 
-    Terraform adds parameters in the AWS Systems Manager Parameter Store that are referenced in `serverless.yml`. If you did not run Terraform, edit your `serverless.yml`:
+    Terraform adds parameters in the AWS Systems Manager Parameter Store that are referenced in `serverless.yml`. So if you did not run Terraform, edit your `serverless.yml`:
     ```yml
     provider:
         name: aws

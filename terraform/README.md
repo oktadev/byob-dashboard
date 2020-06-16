@@ -4,14 +4,23 @@ This application is represented by an OpenID Connect application in Okta, so we 
 ## Prerequisites
 * Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
 
-**If you've decided not to use the provided Makefile, terraform using these steps:**
+### Okta Setup
 
-## Run Terraform
-1. `cd` into the `/terraform` folder, then run
-2. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
-3. `terraform apply -auto-approve okta.setup.tfplan`
+* Using the provided Makefile:
 
-**If you prefer to manually configure Okta. Refer to the steps [below](#manually-configure-okta) instead.**
+    `cd` to the `/byob-dashboard` (root) folder (that contains the Makefile) and run:
+    ```
+    make okta
+    ```
+
+* **(Optional)** Or, if you prefer not to use the Makefile, follow these steps.
+    1. `cd` into the `/terraform` folder, then run
+    2. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
+    3. `terraform apply -auto-approve okta.setup.tfplan`
+
+* **(Optional) Or, if you're more confortable manually configuring Okta,** refer to the manual steps [below](#manually-configure-okta).
+
+---
 
 ## Manually Configure Okta
 1. In your **Developer Console**, navigate to the **Applications** menu, click **Add Application** and select **Single-Page App**

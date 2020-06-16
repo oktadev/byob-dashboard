@@ -1,3 +1,62 @@
+
+# Single Page Application (Local Installation)
+
+## Prerequisites
+* Install [vuecli](https://cli.vuejs.org/#getting-started)
+
+   e.g. via npm:
+
+   ```
+   npm install @vue/cli -g
+   ```
+
+   Note: if you get WARN/ERR on MacOS, run:
+
+   ```
+   sudo npm install -g @vue/cli --unsafe-perm
+   ```
+
+## Make
+1. Use the provided Makefile to generate the local env file using outputs from previous makes. From the `/byob-dashboard` (root) folder (that contains the Makefile), run
+    ```
+    make spa
+    ```
+    This generates the `.env.development.local` file in the `/byob-spa` folder and populates it with the necessary values.
+
+2. Then, compile for development environment. `cd` into the `/byob-spa` folder and run
+    ```
+    npm run serve
+    ```
+3. Open your browser to `http://localhost:8081` and login
+
+---
+
+## Manual
+1. `cd` into `/byob-spa`, then:
+2. Run `npm install`
+3. Create env file `.env.development.local` (In that same `/byob-spa` directory. Note: there is an existing `.env` file. Do not touch that file; Add this `.local` in addition to it). Edit it in with the values below:
+
+   ```
+   VUE_APP_CLIENT_ID={{client_id}}
+   VUE_APP_ISSUER={{issuer_uri}}
+   VUE_APP_API={{api_base_url}}
+   ```
+
+   Where the above variables are:
+   | Variable | Where to find |
+   | --- |:------------- |
+   | VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
+   | VUE_APP_ISSUER | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
+   | VUE_APP_API | The api base url of the API that was deployed in [SPA APIs step](#spa-apis) |
+
+4. The following command compiles and hot-reloads for development environment
+   ```
+   npm run serve
+   ```
+5. Open your browser to `http://localhost:8081` and login
+
+---
+
 # Options
 ## 1. Alternative Login Flow
 To see an example of logging in via redirect to the Okta hosted Signin page *(instead of the Signin Widget)*, add `loginRedirect` to the `.config.js` file.

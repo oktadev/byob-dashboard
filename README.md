@@ -25,11 +25,12 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 ### Prerequisites
 
-1. Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
+1. **macOS Catalina issues:** You must be able to run `npm install`. 
+    * The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
+    * If you are getting the error *"gyp: No Xcode or CLT version detected!"* on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
 
-   - Skip if you prefer to [manually configure Okta](/terraform#manually-configure-okta)
-
-2. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
+2. Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
+3. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
    e.g. via npm:
    
@@ -45,8 +46,21 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
    sudo npm install -g serverless
    ```
 
-3. Create a Named Profile in AWS. [Steps](https://docs.idp.rocks/setup/#create-named-profile-in-aws-cli)
-4. Enable Programmatic Access for Okta. [Steps](https://docs.idp.rocks/setup/#enable-programmatic-access-to-okta)
+4. Install [vuecli](https://cli.vuejs.org/#getting-started)
+
+   e.g. via npm:
+
+   ```
+   npm install @vue/cli -g
+   ```
+
+   Note: if you get WARN/ERR on MacOS, run:
+
+   ```
+   sudo npm install -g @vue/cli --unsafe-perm
+   ```
+5. Create a Named Profile in AWS. [Steps](https://docs.idp.rocks/setup/#create-named-profile-in-aws-cli)
+6. Enable Programmatic Access for Okta. [Steps](https://docs.idp.rocks/setup/#enable-programmatic-access-to-okta)
 
 ### Environment Variables
 
@@ -76,85 +90,29 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     | aws_profile           | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
     | aws_ssm_prefix        | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
 
+---
 
-Once `/terraform/terraform.tfvars` is populated correctly, you can run the scripts to [setup Okta](#okta-setup) and [deploy the API](#spa-apis):
-
-#### Okta Setup
-
-- Use the provided Makefile
-
-cd to the /byob-dashboard folder (that contains the Makefile) and run:
-
-  ```
-  make okta
-  ```
-
-- Or if you prefer not to use the Makefile, follow [these](terraform#run-terraform) steps.
-
-Head over to the [terraform](/terraform) folder for additional details.
-
-#### SPA APIs
-
-We've implemented user management (manage profile, password & factors) APIs using Serverless framework.
-
-- Use the provided Makefile to deploy the api with serverless:
-
-  ```
-  make api
-  ```
-
-- Or if you prefer not to use the Makefile, follow [these](byob-api#deploy) steps.
-
-Navigate to the [api folder](/byob-api) for more info.
-
-## Single Page Application (Local Installation)
-
-1. Prerequisite: Install [vuecli](https://cli.vuejs.org/#getting-started)
-
-   e.g. via npm:
-
-   ```
-   npm install @vue/cli -g
-   ```
-
-   Note: if you get WARN/ERR on MacOS, run:
-
-   ```
-   sudo npm install -g @vue/cli --unsafe-perm
-   ```
-
-2. `cd` into `/byob-spa`, then:
-3. Run `npm install`
-
-   Note: if you get the error "gyp: No Xcode or CLT version detected!" on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
-
-4. Create env file `.env.development.local` (In that same `/byob-spa` directory. Note: there is an existing `.env` file. Do not touch that file; Add this `.local` in addition to it). Edit it in with the values below:
-
-   ```
-   VUE_APP_CLIENT_ID={{client_id}}
-   VUE_APP_ISSUER={{issuer_uri}}
-   VUE_APP_API={{api_base_url}}
-   ```
-
-   Where the above variables are:
-   | Variable | Where to find |
-   | --- |:------------- |
-   | VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
-   | VUE_APP_ISSUER | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
-   | VUE_APP_API | The api base url of the API that was deployed in [SPA APIs step](#spa-apis) |
-
-5. The following command compiles and hot-reloads for development environment
-   ```
-   npm run serve
-   ```
-6. Open your browser to `http://localhost:8081` and login
-
-#### Compile and minify for production
-
+## Make
+Once `/terraform/terraform.tfvars` is populated correctly, run Make:
 ```
-npm run build
+make all
 ```
+The above will:
+1. Run the provided Terraform scripts to configure your Okta Org
+2. Deploy the API using Serverless
+3. Create the local env file (`.env.development.local`) for the SPA
 
-### Options
+If you didn't see any errors, you're ready to go. `cd` into the `byob-spa` folder and run
+```
+npm run serve
+```
+The, open your browser to `http://localhost:8081` and login
 
-Head over to the [spa folder](/byob-spa) for details on how to enable some built-in options
+---
+
+## Step-by-step Options
+If you would rather do things step by step, do not run `make all`. Deploying this project has 3 parts:
+1. Run the provided Terraform scripts. Click [here](terraform#okta-setup) for next steps.
+2. Deploy the API. Click [here](byob-api#serverless) for next steps.
+3. Bring up the spa on localhost. Click [here](byob-spa) for next steps.
+
