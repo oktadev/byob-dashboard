@@ -114,5 +114,5 @@ The, open your browser to `http://localhost:8081` and login
 If you would rather do things step by step, do not run `make all`. Deploying this project has 3 parts:
 1. Run the provided Terraform scripts. Click [here](terraform#okta-setup) for next steps.
 2. Deploy the API. Click [here](byob-api#serverless) for next steps.
-3. Bring up the spa on localhost. Click [here](byob-spa) for next steps.
+3. Bring up the spa on localhost. Click [here](byob-spa#make) for next steps.
 
