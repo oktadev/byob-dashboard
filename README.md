@@ -75,7 +75,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
   app_url        = "http://localhost:8081"
   environment    = "dev"
   aws_region     = "us-east-1"
-  aws_profile    = "(see Prerequisites Step 4.)"
+  aws_profile    = "(see Prerequisites Step 5.)"
   aws_ssm_prefix = "byob"
   ```
 
@@ -85,11 +85,11 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
   | -------------- | :------------------------------------------------------------------------- | ----------------------- |
   | org_name       | Okta Org subdomain name (e.g. "atko")                                      |                         |
   | base_url       | Base URL for the Okta org (okta.com or oktapreview.com)                    | "okta.com"              |
-  | api_token      | OKTA_API_TOKEN, per [Prerequisites Step 4.](#prerequisites)                |                         |
+  | api_token      | OKTA_API_TOKEN, per [Prerequisites Step 6.](#prerequisites)                |                         |
   | app_url        | Base URL for the SPA.                                                      | "http://localhost:8081" |
   | environment    | Stage configured in API Gateway (dev, prod, ...)                           | "dev"                   |
   | aws_region     | Region to deploy AWS components.                                           | "us-east-1"             |
-  | aws_profile    | Profile configured in AWS CLI. per [Prerequisites Step 3.](#prerequisites) |                         |
+  | aws_profile    | Profile configured in AWS CLI. per [Prerequisites Step 5.](#prerequisites) |                         |
   | aws_ssm_prefix | Prefix for parameters created in AWS Parameter Store.                      | "byob"                  |
 
 ---
