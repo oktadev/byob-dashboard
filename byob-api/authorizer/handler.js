@@ -28,7 +28,8 @@ exports.auth = function (event, context) {
              * Only the user (identified by the "uid" claim) can update themselves
              * We explicitly whitelist the paths containing "uid" only
              */
-            const uid = jwt.claims.uid;
+            const uid = jwt.claims.uid;   
+            policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/users/' + uid); // allow retrive own profile
             policy.allowMethod(AuthPolicy.HttpVerb.POST, '/api/v1/users/' + uid); // allow update own profile
             policy.allowMethod(AuthPolicy.HttpVerb.POST, '/api/v1/users/' + uid + '/credentials/*'); // allow change own password
             policy.allowMethod(AuthPolicy.HttpVerb.GET, '/api/v1/users/' + uid + '/factors'); // allow list own factors
