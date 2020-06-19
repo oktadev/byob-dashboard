@@ -40,14 +40,6 @@ functions:
     handler: authorizer/handler.auth
     cors: true
 
-  register:
-    handler: registration/register.handler
-    events:
-       - http:
-           path: /register
-           method: POST
-           cors: true
-
   proxy:
     handler: proxy/okta.handler
     events:
