@@ -5,7 +5,6 @@ import Home from "@/views/Home.vue";
 import Settings from "@/views/Settings.vue";
 import LoginComponent from "@/components/Login";
 import Activate from "@/components/Activate";
-import Register from "@/views/Register.vue"; // Self-registration for demo purposes only. 
 import config from "@/.config";
 
 Vue.use(Router);
@@ -41,15 +40,6 @@ const router = new Router({
       component: Activate,
       meta: {
         title: "Activate",
-      },
-    },
-    {
-      path: "/register",
-      name: "register",
-      component: Register,
-      meta: {
-        title: "Registration",
-        requiresAuth: false,
       },
     }
   ],
