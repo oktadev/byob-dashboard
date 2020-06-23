@@ -96,7 +96,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 ## Make
 
-Once `/terraform/terraform.tfvars` is populated correctly, make sure you're in the byob-dashboard folder and run:
+Once `/terraform/terraform.tfvars` is populated correctly, cd to the /byob-dashboard folder and run:
 
 ```
 make check
