@@ -33,3 +33,9 @@ This application is represented by an OpenID Connect application in Okta, so we 
 4. Make note of the **Client ID**, as it will be needed environment configuration. 
 5. Make sure that **Use PKCE (for public clients)** (underneath the Client Id) is selected
 6. Navigate to **Api** > **Trusted Origins** and add `http://localhost:8081` as a type = **CORS** entry.
+7. Add a custom claim to the Auth Server you'll be using.: 
+    * Name = `groups`
+    * Value = `groups: matches regex.*`
+    * Scopes = `Any`
+    * Type = `id`
+    * Included = `Always`
