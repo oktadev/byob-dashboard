@@ -2,11 +2,6 @@
 #    Oauth2 SPA
 #    Custom authorization server for SPA
 
-# Local variables
-locals {
-  app_name = "byob-dashboard"
-}
-
 # Setup Okta Tenant
 provider "okta" {
   org_name  = var.org_name
@@ -19,6 +14,11 @@ provider "okta" {
 data "okta_group" "byob-users" {
   name = "Everyone"
 }
+
+# Get default IDP Policy
+# data "okta_default_policy" "idp_policy" {
+#   type = "IDP_DISCOVERY"
+# }
 
 # Create OAuth2 SPA App
 resource "okta_app_oauth" "okta-byob" {
@@ -61,15 +61,6 @@ resource "okta_auth_server" "okta-byob" {
 #   description      = "Read okta-byob"
 #   consent          = "IMPLICIT"
 # }
-
-resource "okta_auth_server_claim" "okta-byob-groups-id" {
-  auth_server_id    = okta_auth_server.okta-byob.id
-  name              = "groups"
-  value             = ".*"
-  value_type        = "GROUPS"
-  group_filter_type = "REGEX"
-  claim_type        = "IDENTITY"
-}
 
 # Create policy in custom authorization server
 resource "okta_auth_server_policy" "okta-byob" {
@@ -139,20 +130,5 @@ resource "okta_auth_server_policy_rule" "okta-byob" {
   scope_whitelist               = ["*"]
   group_whitelist               = [data.okta_group.byob-users.id]
   access_token_lifetime_minutes = 60
-}
-
-
-
-# Outputs
-output "okta_app_oauth_client_id" {
-  value = okta_app_oauth.okta-byob.client_id
-}
-
-output "okta_auth_server_id" {
-  value = okta_auth_server.okta-byob.id
-}
-
-output "okta_auth_server_issuer_uri" {
-  value = "https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-byob.id}"
 }
 

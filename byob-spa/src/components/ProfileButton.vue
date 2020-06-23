@@ -11,6 +11,7 @@
         >
             <v-icon left dark>mdi-account</v-icon>
             {{accountName}}
+            <v-icon right dark>mdi-chevron-down</v-icon>
         </v-btn>
         </template>
         <v-card v-if="userinfo">
@@ -84,20 +85,30 @@ export default {
             await this.$auth.logout()
         },
         showProfile() {
-            this.$router.push({
-                name: 'settings',
-                params: {
-                    focusTab: 0
-                }
-            })
+            if (this.$router.history.current.name !== 'settings') {
+                this.$router.push({
+                    name: 'settings',
+                    params: {
+                        focusTab: 0
+                    }
+                })
+            } else {
+                const settingsComponent = this.$root.$children[0].$children[0].$children[1].$children[0];
+                settingsComponent.activeTab = 0;
+            }
         },
         changePassword() {
-            this.$router.push({
-                name: 'settings',
-                params: {
-                    focusTab: 1
-                }
-            })
+            if (this.$router.history.current.name !== 'settings') {
+                this.$router.push({
+                    name: 'settings',
+                    params: {
+                        focusTab: 1
+                    }
+                })
+            } else {
+                const settingsComponent = this.$root.$children[0].$children[0].$children[1].$children[0];
+                settingsComponent.activeTab = 1;
+            }
         }
     }    
 }

@@ -7,6 +7,7 @@ export default {
       scope: process.env.VUE_APP_SCOPES
     },
     api: process.env.VUE_APP_API,
+    adminUrl: process.env.VUE_APP_ADMIN_URL,
     brand: {
       logo: process.env.VUE_APP_LOGO,
       logo_inv: process.env.VUE_APP_LOGO_INVERSE,

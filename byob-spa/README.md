@@ -42,6 +42,7 @@
    VUE_APP_CLIENT_ID={{client_id}}
    VUE_APP_ISSUER={{issuer_uri}}
    VUE_APP_API={{api_base_url}}
+   VUE_APP_ADMIN_URL={{e.g. http://localhost:8080/login}}
    ```
 
    Where the above variables are:
@@ -50,6 +51,7 @@
    | VUE_APP_CLIENT_ID | The `client_id` of the Okta App. In Okta, search for the app named `byob-dashboard` (that was provisioned by terraform) |
    | VUE_APP_ISSUER | The `issuer_uri` of the Auth Server. In Okta, search for the Authorization Server named `byob-dashboard` (that was provisioned by terraform) |
    | VUE_APP_API | The api base url of the API that was deployed |
+   | VUE_APP_ADMIN_URL | The url of the [okta-dac](https://github.com/oktadeveloper/okta-dac) app, e.g. `http://localhost:8080/login` |
 
 4. The following command compiles and hot-reloads for development environment
    ```
