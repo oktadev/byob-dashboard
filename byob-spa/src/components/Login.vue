@@ -22,27 +22,32 @@ export default {
           pkce: true,
           issuer: this.$config.oidc.issuer,
           scopes: this.$config.oidc.scope.split(" "),
-          display: "page",
+          display: "page"
         },
         features: {
           // passwordlessAuth: true,
           // webauthn: true,
           multiOptionalFactorEnroll: true,
-          // idpDiscovery: true,
+          idpDiscovery: true
         },
+        idpDiscovery: {
+          requestContext: window.location.href.split(
+            window.location.pathname
+          )[0]
+        }
       };
       this.widget = new OktaSignIn(config);
 
-      this.widget.authClient.session.exists().then((exists) => {
+      this.widget.authClient.session.exists().then(exists => {
         if (exists) {
           this.$auth.loginRedirect("/", {});
         } else {
           this.widget.renderEl(
             { el: "#okta-signin-container" },
-            (res) => {
+            res => {
               console.log(res);
             },
-            (err) => {
+            err => {
               throw err;
             }
           );
@@ -53,6 +58,6 @@ export default {
   destroyed() {
     // Remove the widget from the DOM on path change
     this.widget.remove();
-  },
+  }
 };
 </script>
