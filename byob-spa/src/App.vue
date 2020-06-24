@@ -82,7 +82,8 @@ export default {
         async admin() {
             const claims = await this.$auth.getUser();
             if (claims.groups && claims.groups.includes('SUPERUSERS')) {
-                window.location.href=this.$config.adminUrl
+                const win = window.open(this.$config.adminUrl, '_blank');
+                win.focus();
             }
         }
     }

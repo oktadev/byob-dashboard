@@ -18,7 +18,17 @@ This application is represented by an OpenID Connect application in Okta, so we 
     2. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
     3. `terraform apply -auto-approve okta.setup.tfplan`
 
-* **(Optional) Or, if you're more confortable manually configuring Okta,** refer to the manual steps [below](#manually-configure-okta).
+* **(Optional) If you're more confortable manually configuring Okta,** refer to the manual steps [below](#manually-configure-okta).
+
+
+### (Required) Manual Step
+__byob-dashboard__ implements a custom user welcome page. Update the __User Activation__ email template to send new users to this page instead of the Okta branded Welcome Wizard.
+
+Terraform does not currently support updating email templates, so perform these manually: 
+
+* Replace `${activationLink}` (screenshot below) with `http://localhost:8081/activate/${activationToken}` <a href="#user-activation-email-screenshot"></a>
+
+![alt text](../images/user-activation-email.png)
 
 ---
 
@@ -39,3 +49,4 @@ This application is represented by an OpenID Connect application in Okta, so we 
     * Scopes = `Any`
     * Type = `id`
     * Included = `Always`
+8. Update the __User Activation__ email template: Replace `${activationLink}` (see [screenshot above](#user-activation-email-screenshot)) with `http://localhost:8081/activate/${activationToken}`

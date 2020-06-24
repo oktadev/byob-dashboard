@@ -12,12 +12,12 @@
 
 If you've ever considered building your own User HomePage (aka the "Chicklet Page") – in order to have 100% control of the branding – and want some sample code to get started, you've found the right repo!
 
-This project is built in Vue.js and uses
-
-- [Vuetify 2.x](https://vuetifyjs.com/en/) Material Design Component Framework
-- [Vuedraggable](https://github.com/SortableJS/Vue.Draggable) Vue drag-and-drop component based on Sortable.js
-- [Okta Vue.js SDK](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue)
-- [Okta Sign-in Widget](https://github.com/okta/okta-signin-widget)
+* The SPA is built in Vue.js and uses
+    - [Vuetify 2.x](https://vuetifyjs.com/en/) Material Design Component Framework
+    - [Vuedraggable](https://github.com/SortableJS/Vue.Draggable) Vue drag-and-drop component based on Sortable.js
+    - [Okta Vue.js SDK 2.0.x](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue)
+    - [Okta Sign-in Widget 4.1.x](https://github.com/okta/okta-signin-widget)
+* The API is developed using [Serverless](https://www.serverless.com/) framework
 
 ## Setup
 
@@ -126,13 +126,24 @@ The above will:
 2. Deploy the API using Serverless
 3. Create the local env file (`.env.development.local`) for the SPA
 
-If you didn't see any errors, you're ready to go. `cd` into the `byob-spa` folder and run
 
+If you didn't see any errors during `make`, you're *almost* ready to go. But there is one manual step to complete:
+
+## (Required) Manual Step
+__byob-dashboard__ implements a custom user welcome page. Update the __User Activation__ email template to send new users to this page instead of the Okta branded Welcome Wizard.
+
+Terraform does not currently support updating email templates, so perform these manually: 
+
+* Replace `${activationLink}` (screenshot below) with `http://localhost:8081/activate/${activationToken}` 
+
+![alt text](./images/user-activation-email.png)
+
+## Run
+`cd` into the `byob-dashboard` folder and run
 ```
 npm run serve
 ```
-
-The, open your browser to `http://localhost:8081` and login
+Then, open your browser to `http://localhost:8081` and login
 
 ---
 
