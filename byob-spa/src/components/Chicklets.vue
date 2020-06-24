@@ -26,7 +26,7 @@
           <v-img contain :src="chicklet.logoUrl" :height="logoHeight"></v-img>
         </v-btn>
         <v-card flat class="mx-3 mt-2" :width="chickletWidth">
-          <div class="chicklet-label">{{chicklet.label.replace(/^(MTA_)/, "")}}</div>
+          <div class="chicklet-label">{{chicklet.label.replace(/^(DAC_)/, "")}}</div>
         </v-card>
       </v-card>
     </draggable>
