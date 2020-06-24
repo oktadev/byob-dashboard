@@ -1,4 +1,5 @@
-<style scoped></style>
+<style scoped>
+</style>
 
 <template>
   <div class="login">
@@ -23,6 +24,11 @@ export default {
           issuer: this.$config.oidc.issuer,
           scopes: this.$config.oidc.scope.split(" "),
           display: "page"
+        },
+        logo: this.$config.brand.logo,
+        brandName: this.$config.brand.name,
+        colors: {
+          brand: this.$config.brand.color
         },
         features: {
           // passwordlessAuth: true,
