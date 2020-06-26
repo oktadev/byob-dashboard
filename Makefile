@@ -41,6 +41,8 @@ SERVERLESS-exists: ; @which serverless > /dev/null
 .DEFAULT_GOAL := all
 all: check okta api spa
 
+removeAll: check removeSpa removeApi destroyOkta
+
 .PHONY: planOkta
 planOkta: 
 	@cd ${TERRAFORM} && \

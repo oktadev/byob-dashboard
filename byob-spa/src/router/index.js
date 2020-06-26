@@ -17,11 +17,17 @@ const router = new Router({
       path: "/",
       name: "home",
       component: Home,
-      meta: { requiresAuth: true },
+      meta: {
+        title: 'Home',
+        requiresAuth: true
+      },
     },
     {
       path: "/login",
       component: LoginComponent,
+      meta: {
+        title: 'Login'
+      }
     },
     {
       path: "/oauth/callback",
@@ -32,7 +38,10 @@ const router = new Router({
       name: "settings",
       component: Settings,
       props: true,
-      meta: { requiresAuth: true },
+      meta: {
+        title: 'Settings',
+        requiresAuth: true
+      },
     },
     {
       path: "/activate/:token",
@@ -60,16 +69,19 @@ Vue.use(Auth, {
 });
 
 const onAuthRequired = async (from, to, next) => {
+  document.title = config.brand.name;
   if (
     from.matched.some((record) => record.meta.requiresAuth) &&
     !(await Vue.prototype.$auth.isAuthenticated())
   ) {
+    document.title = config.brand.name + " - " + "Sign In";
     if (config.loginRedirect) {
       Vue.prototype.$auth.loginRedirect("/");
     } else {
       next({ path: "/login" });
     }
   } else {
+    document.title = config.brand.name + " - " + from.meta.title;
     next();
   }
 };
