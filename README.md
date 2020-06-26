@@ -126,17 +126,7 @@ The above will:
 2. Deploy the API using Serverless
 3. Create the local env file (`.env.development.local`) for the SPA
 
-
-If you didn't see any errors during `make`, you're *almost* ready to go. But there is one manual step to complete:
-
-## (Required) Manual Step
-__byob-dashboard__ implements a custom user welcome page. Update the __User Activation__ email template to send new users to this page instead of the Okta branded Welcome Wizard.
-
-Terraform does not currently support updating email templates, so perform these manually: 
-
-* Replace `${activationLink}` (screenshot below) with `http://localhost:8081/activate/${activationToken}` 
-
-![alt text](./images/user-activation-email.png)
+If you didn't see any errors during `make`, you're ready to go:
 
 ## Run
 `cd` into the `byob-dashboard` folder and run
