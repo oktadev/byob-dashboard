@@ -129,7 +129,7 @@ export default {
         recaptchaToken: this.recaptchaToken,
       };
       let result = await axios.post(
-        process.env.VUE_APP_API + "/dashboard/api/v1/users",
+        process.env.VUE_APP_API + "/register",
         body
       );
       this.registrationStatus = result.data;

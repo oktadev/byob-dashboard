@@ -48,14 +48,14 @@ resource "aws_ssm_parameter" "okta-api-token" {
   }
 }
 
-# resource "aws_ssm_parameter" "recaptcha-site-secret" {
-#  name        = "/${var.aws_ssm_prefix}/okta/${var.environment}/recaptcha-site-secret"
-#  description = "Google Recaptcha Site Secret"
-#  type        = "SecureString"
-#  value       = var.recaptcha_site_secret
-#  tags = {
-#    environment = var.environment
-#  }
-#}
+resource "aws_ssm_parameter" "recaptcha-site-secret" {
+  name        = "/${var.aws_ssm_prefix}/okta/${var.environment}/recaptcha-site-secret"
+  description = "Google Recaptcha Site Secret"
+  type        = "SecureString"
+  value       = var.recaptcha_site_secret
+  tags = {
+    environment = var.environment
+  }
+}
 
 
