@@ -39,6 +39,6 @@ This application is represented by an OpenID Connect application in Okta, so we 
     * Scopes = `Any`
     * Type = `id`
     * Included = `Always`
-8. Update the __User Activation__ email template: Replace `${activationLink}` (see [screenshot below](#user-activation-email-screenshot)) with `http://localhost:8081/activate/${activationToken}`
+8. Update the __User Activation__ email template: Replace `${activationLink}` (see [screenshot below](#user-activation-email-screenshot)) with `http://localhost:8081/activate/${activationToken}` <a name="activation-email-template"></a>
 
 ![alt text](../images/user-activation-email.png)

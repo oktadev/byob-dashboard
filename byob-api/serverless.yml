@@ -1,16 +1,14 @@
 service: okta-byob-api
 
-frameworkVersion: ">=1.1.0 <2.0.0"
+frameworkVersion: ">=1.1.0"
 
-plugins:
+#plugins:
   # - serverless-offline-ssm
-  - serverless-offline
+  # - serverless-offline
 
 custom:
   env: ${file(./.env.json)}
   ssmPrefix: ${self:custom.env.AWS_SSM_PREFIX}
-
-outputs:
 
 provider:
   name: aws

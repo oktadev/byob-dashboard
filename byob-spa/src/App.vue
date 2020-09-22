@@ -2,7 +2,10 @@
     <v-app>
         <v-app-bar app>
             <v-toolbar-title class="headline text-uppercase">
-                <v-icon size="30px" color="primary">mdi-emoticon</v-icon>&nbsp;
+                <v-icon 
+                    size="30px" 
+                    :color="$config.brand.color ? this.$config.brand.color : 'primary'"
+                >mdi-emoticon</v-icon>&nbsp;
                 <span class="font-weight-light">Bring Your Own Brand</span>
             </v-toolbar-title>
 
@@ -18,7 +21,11 @@
             </router-link>
             <div v-if="authenticated">
                 <v-btn text @click="home">
-                    <v-icon left dark>mdi-home</v-icon>Home
+                    <v-icon 
+                        left 
+                        dark 
+                        :color="$config.brand.color ? this.$config.brand.color : 'primary'"
+                    >mdi-home</v-icon>Home
                 </v-btn>
                 <ProfileButton v-bind:userinfo="userinfo"></ProfileButton>
                 <v-btn v-if="isAdmin" outlined @click="admin"><v-icon></v-icon>Admin</v-btn>
