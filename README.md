@@ -133,7 +133,7 @@ If you didn't see any errors during `make`, you're ready to go:
 
 
 ## (Required) Manual Step
-Terraform currently does not support updating email templates so you have to do the following manually to get the welcome email to be redirect to the user activation path of the locally running app: `localhost:8181/activate`. Follow step 8 [here](terraform#activation-email-template).
+Terraform currently does not support updating email templates so you have to do the following manually to get the welcome email to be redirect to the user activation path of the locally running app: `localhost:8081/activate`. Follow step 8 [here](terraform#activation-email-template).
 
 
 ## Run
