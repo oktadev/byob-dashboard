@@ -33,7 +33,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 2. Install [terraform v0.13.0 or above](https://learn.hashicorp.com/terraform/getting-started/install)
    * The terraform files uses v0.13 syntax. If you have an older version of terraform, you need to upgrade. If you can't upgrade, skip terraform and do these manual steps:
    1. [Follow the manual steps to configure Okta](terraform#manually-configure-okta).
-   2. [Manually create SSM parameters in AWS](byob-api#populate-aws-ssm-parameters)
+   2. [Populate AWS SSM parameters](byob-api#populate-aws-ssm-parameters)
 3. Install [Serverless v1.1.0 or above](https://www.serverless.com/framework/docs/getting-started/)
 
    e.g. via npm:
@@ -133,7 +133,7 @@ If you didn't see any errors during `make`, you're ready to go:
 
 
 ## (Required) Manual Step
-Terraform currently does not support granting Okta API Scopes. These scopes are required for okta-dac to properly function.
+Terraform currently does not support updating email templates so you have to do the following manually to get the welcome email to be redirect to the user activation path of the locally running app: `localhost:8181/activate`. Follow step 8 [here](terraform#activation-email-template).
 
 
 ## Run
