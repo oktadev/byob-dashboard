@@ -30,8 +30,11 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
    - The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
    - If you are getting the error _"gyp: No Xcode or CLT version detected!"_ on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
 
-2. Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
-3. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
+2. Install [terraform v0.13.0 or above](https://learn.hashicorp.com/terraform/getting-started/install)
+   * The terraform files uses v0.13 syntax. If you have an older version of terraform, you need to upgrade. If you can't upgrade, skip terraform and do these manual steps:
+   1. [Follow the manual steps to configure Okta](terraform#manually-configure-okta).
+   2. [Manually create SSM parameters in AWS](byob-api#populate-aws-ssm-parameters)
+3. Install [Serverless v1.1.0 or above](https://www.serverless.com/framework/docs/getting-started/)
 
    e.g. via npm:
 
@@ -127,6 +130,11 @@ The above will:
 3. Create the local env file (`.env.development.local`) for the SPA
 
 If you didn't see any errors during `make`, you're ready to go:
+
+
+## (Required) Manual Step
+Terraform currently does not support granting Okta API Scopes. These scopes are required for okta-dac to properly function.
+
 
 ## Run
 `cd` into the `byob-dashboard` folder and run
