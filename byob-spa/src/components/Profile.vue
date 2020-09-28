@@ -9,20 +9,20 @@
             >Save</v-btn
           >
         </v-row>
-        <template v-for="claim in claims">
-          <div v-if="claim.mfaFunction" :key="claim.key">
-            <v-row :key="'row-' + claim.key">
+        <template v-for="field in fields">
+          <div v-if="field.mfaFunction" :key="field.name">
+            <v-row :key="'row-' + field.name">
               <v-col>
                 <v-text-field
-                  v-model="claim.value"
-                  :key="claim.key"
-                  :label="claim.label"
-                  :disabled="saved || !claim.editable"
+                  v-model="field.value"
+                  :key="field.name"
+                  :label="field.label"
+                  :disabled="saved || !field.editable"
                 ></v-text-field>
               </v-col>
               <v-col
                 class="mt-6 caption success--text"
-                v-if="claim.mfaEnrolled"
+                v-if="field.mfaEnrolled"
               >
                 <v-icon small color="success" class="mr-2">mdi-check</v-icon>MFA
                 enrolled
@@ -31,10 +31,10 @@
           </div>
           <v-text-field
             v-else
-            :key="claim.key"
-            v-model="claim.value"
-            :label="claim.label"
-            :disabled="saved || !claim.editable"
+            :key="field.name"
+            v-model="field.value"
+            :label="field.label"
+            :disabled="saved || !field.editable"
           ></v-text-field>
         </template>
       </v-form>
@@ -83,8 +83,9 @@ export default {
         "sub",
         "zoneinfo",
       ],
+      fields: [],
       fieldMeta: [
-        // list of claims in the idToken and their behavior in the UI
+        // list of required fields (must exist in idToken); and their behavior in the UI
         {
           name: "preferred_username",
           label: "Username",
@@ -121,13 +122,12 @@ export default {
           profileField: "mobilePhone",
           editable: true,
           formatMask: "",
-          mfa: true,
+          mfaFunction: true,
         },
       ],
       saved: true,
       overlay: false,
       overlayMessage: undefined,
-      claims: [],
       appUserInfo: this.$root.$children[0].userinfo,
       enrolledFactors: undefined,
       smsFactor: undefined,
@@ -147,10 +147,13 @@ export default {
       );
     },
     profilePic() {
-      for (let claim of this.claims) {
-        if (claim.key == "profile") return claim.value;
+      try {
+        return this.fields.filter(field=>{
+          return field.name == 'profile';
+        })[0].value;
+      } catch {
+        return null;
       }
-      return null;
     },
   },
   created() {
@@ -158,26 +161,37 @@ export default {
   },
   methods: {
     async init() {
-      let claims = [];
+      let fields = [];
       // A browser refresh here could prevent userinfo to be loaded in from App.
       // But we can easily fetch it using getUser()
       if (!this.appUserInfo) this.appUserInfo = await this.$auth.getUser();
 
+      this.fieldMeta.forEach(field=>{
+        fields.push(field);
+      });
       for (let [key, value] of Object.entries(this.appUserInfo)) {
         // Don't show the "invisible" fields
         if (!this.invisibleFields.includes(key)) {
-          claims.push({
-            key: key,
+          const obj = {
+            name: key,
             value: value,
             valueOld: value,
             editable: this.isEditableField(key),
             mfaFunction: this.mfaFunction(key),
             mfaEnrolled: false,
             label: this.customFieldLabel(key),
+          };
+          const index = fields.findIndex(field=>{
+            return field.name == key;
           });
+          if (index >=0) {
+            fields[index] = obj;
+          } else {
+            fields.push(obj);
+          }
         }
       }
-      this.claims = claims;
+      this.fields = fields;
       this.getFactors();
     },
     async getFactors() {
@@ -204,23 +218,23 @@ export default {
           if (smsFactors.length > 0) {
             this.smsFactor = smsFactors[0];
             if (this.smsFactor.profile.phoneNumber) {
-              this.claims
-                .filter((claim) => {
-                  return claim.mfaFunction;
+              this.fields
+                .filter((field) => {
+                  return field.mfaFunction;
                 })
-                .forEach((claim) => {
+                .forEach((field) => {
                   if (
-                    this.substringLast10(claim.value) ==
+                    this.substringLast10(field.value) ==
                     this.substringLast10(this.smsFactor.profile.phoneNumber)
                   )
-                    claim.mfaEnrolled = true;
-                  else claim.mfaEnrolled = false;
+                    field.mfaEnrolled = true;
+                  else field.mfaEnrolled = false;
                 });
             }
           } else {
             this.smsFactor = undefined;
-            this.claims.forEach((claim) => {
-              claim.mfaEnrolled = false;
+            this.fields.forEach((field) => {
+              field.mfaEnrolled = false;
             });
           }
         }
@@ -231,26 +245,26 @@ export default {
     substringLast10(value) {
       return value.substr(value.length - 10);
     },
-    isEditableField(claim) {
+    isEditableField(name) {
       return (
         this.fieldMeta.filter((field) => {
-          return field.name == claim && field.editable;
+          return field.name == name && field.editable;
         }).length > 0
       );
     },
-    customFieldLabel(claim) {
+    customFieldLabel(name) {
       try {
         return this.fieldMeta.filter((field) => {
-          return field.name == claim;
+          return field.name == name;
         })[0].label;
       } catch {
-        return claim;
+        return name;
       }
     },
-    mfaFunction(claim) {
+    mfaFunction(name) {
       return (
         this.fieldMeta.filter((field) => {
-          return field.name == claim && field.mfa;
+          return field.name == name && field.mfaFunction;
         }).length > 0
       );
     },
@@ -260,11 +274,14 @@ export default {
       this.overlayMessage = undefined;
 
       let profile = {};
-      this.fieldMeta.forEach((field) => {
-        let index = this.claims.findIndex((claim) => {
-          return claim.key == field.name;
-        });
-        if (index >= 0) profile[field.profileField] = this.claims[index].value;
+      this.fieldMeta.forEach((metaField) => {
+        try {
+          profile[metaField.profileField] = this.fields.filter(field=>{
+            return field.name == metaField.name;
+          })[0].value;
+        } catch {
+          // do nothing;
+        }
       });
       const payload = {
         profile: profile,
@@ -280,32 +297,34 @@ export default {
         if (res.status == 200) {
           this.overlayMessage = "Profile Updated";
 
-          this.claims.forEach((claim) => {
+          this.fields.forEach((field) => {
             // must make sure to update the userinfo object's attributes
-            this.appUserInfo[claim.key] = claim.value;
+            this.appUserInfo[field.name] = field.value;
 
             // phone number was updated. Display option to enroll in MFA
-            if (claim.mfaFunction && claim.value != claim.valueOld) {
-              this.newPhoneNumber = claim.value;
-              if (
-                this.smsFactor &&
-                this.substringLast10(this.newPhoneNumber) ==
-                  this.substringLast10(this.smsFactor.profile.phoneNumber)
-              ) {
-                this.getFactors();
-              } else {
+            if (field.mfaFunction && field.value != field.valueOld) {
+              this.getFactors();
+              this.newPhoneNumber = field.value;
+              if (this.newPhoneNumber && this.newPhoneNumber.length > 0) {
+                if (
+                  this.smsFactor &&
+                  this.substringLast10(this.newPhoneNumber) !=
+                    this.substringLast10(this.smsFactor.profile.phoneNumber)
+                ) 
                 this.updateMfa = true;
               }
             }
-            claim.valueOld = claim.value;
+
+            
+            field.valueOld = field.value;
           });
 
           // update the "name" claim, in case first/last names have changed
           this.appUserInfo.name =
             this.appUserInfo.given_name + " " + this.appUserInfo.family_name;
-          this.claims[
-            this.claims.findIndex((claim) => {
-              return claim.key == "name";
+          this.fields[
+            this.fields.findIndex((field) => {
+              return field.name == "name";
             })
           ].value = this.appUserInfo.name;
 

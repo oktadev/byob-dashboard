@@ -211,6 +211,7 @@ export default {
             self.progress = false;
             self.persistent = true;
           } else {
+            self.showPasscodeField = false;
             self.$refs.enrollform.reset();
             self.setupModal = false;
             self.emitUpdate();
@@ -256,6 +257,7 @@ export default {
           self.progress = false;
           self.resendTimer = undefined;
           self.persistent = false;
+          self.showPasscodeField = false;
         }
       }
       this.requestApi(options, handler);

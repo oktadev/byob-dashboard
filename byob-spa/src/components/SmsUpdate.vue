@@ -11,7 +11,7 @@
           Enroll <strong>{{ phoneNumber }}</strong> in MFA?
         </p>
 
-        <v-form ref="enrollmentForm">
+        <v-form ref="enrollform">
           <div v-if="showPasscodeField">
             <p>
               Please enter the code sent to <strong>{{ factor.profile.phoneNumber }}</strong>
@@ -127,7 +127,7 @@ export default {
       }, 1500);
     },       
     async close() {
-      this.$refs.enrollmentForm.reset();
+      this.$refs.enrollform.reset();
       this.resendTimer = undefined;
       this.resendAllowed = false;
       this.showPasscodeField = false;
@@ -176,7 +176,11 @@ export default {
       }
       const handler = function(self, res) {
         self.factor = res.data;
+        self.$refs.enrollform.reset();
         self.$emit("close");
+        self.progress = false;
+        self.resendTimer = false;
+        self.showPasscodeField = false;
       }
       this.requestApi(options, handler);
     },

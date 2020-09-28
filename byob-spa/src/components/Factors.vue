@@ -139,6 +139,8 @@ export default {
     },
     updateSmsFactor(factor) {
       this.factorCatalog.sms.factor = factor;
+      if (factor)
+        this.factorCatalog.sms.catalog.status = factor.status;
     },
     async factorUpdated(target) {
       const accessToken = await this.$auth.getAccessToken();
