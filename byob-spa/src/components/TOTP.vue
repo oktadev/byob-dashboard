@@ -1,27 +1,21 @@
 <template>
   <div class="py-2 caption">
     <v-card flat outlined class="pa-2">
-    <h4>Okta Verify</h4>
-    <div v-if="status == 'ACTIVE'">
-      <p class="success--text">Okta Verify is enrolled.</p>
-      <v-btn 
-        small outlined 
-        @click="reset"
-        :disabled="progress"
-      >Remove</v-btn>
-    </div>
-    <div v-else>
-      <div v-if="status == 'NOT_SETUP'">
-        <p>Available for enrollment</p>
-        <v-btn 
-          small outlined 
-          @click="enroll"
-          :disabled="progress"
-        >Setup</v-btn>
-        <v-dialog v-model="displayQRCode" width="300">
+      <h4>{{authenticatorName}}</h4>
+      <div v-if="status == 'ACTIVE'">
+        <p class="success--text">You have an enrolled {{authenticatorName}}.</p>
+        <v-btn small outlined @click="reset" :disabled="progress">Remove</v-btn>
+      </div>
+      <div v-else>
+        <div v-if="status == 'NOT_SETUP'">
+          <p>Available for enrollment</p>
+          <v-btn small outlined 
+            @click="enroll" :disabled="progress"
+          >Setup</v-btn>
+          <v-dialog v-model="displayQRCode" width="300" persistent>
             <v-card class="pt-4 px-0 pb-1">
               <div class="px-4">
-                <p>Please scan the QR code below with Okta Verify</p>
+                <p>Please scan the QR code below with your {{authenticatorName}} app.</p>
                 <div>
                     <img :src="enrollQR" />
                 </div>
@@ -33,11 +27,14 @@
                         required
                         :disabled="progress"
                     ></v-text-field>
-                    <v-btn
-                      small outlined
-                      @click="activate"
-                      :disabled="progress || !activationCode || activationCode.length != 6"
-                    >Activate</v-btn>
+                    <v-card-actions class="ml-n2">
+                      <v-btn
+                        small outlined
+                        @click="activate"
+                        :disabled="progress || !activationCode || activationCode.length != 6"
+                      >Activate</v-btn>
+                      <v-btn small outlined @click="displayQRCode=false" :disabled="progress"> Cancel </v-btn>
+                    </v-card-actions>
                 </v-form>
               </div>
               <v-progress-linear 
@@ -47,17 +44,17 @@
                 :active="progress"
               ></v-progress-linear>
             </v-card>
-        </v-dialog>
+          </v-dialog>
+        </div>
+        <div v-else>
+          <p class="grey--text">Enrollment is not available at this time.</p>
+        </div>
       </div>
-      <div v-else>
-        <p class="grey--text">Enrollment is not available at this time.</p>
-      </div>
-    </div>
-    <v-overlay :value="overlay">
-      <v-btn>
-        {{ overlayMessage }}
-      </v-btn>
-    </v-overlay>
+      <v-overlay :value="overlay">
+        <v-btn>
+          {{ overlayMessage }}
+        </v-btn>
+      </v-overlay>
     </v-card>
   </div>
 </template>
@@ -66,11 +63,11 @@
 import axios from "axios";
 
 export default {
-  name: "verify",
+  name: "totp",
   data() {
     return {
       status: undefined,
-      factor: false,
+      factor: undefined,
       enrollQR: undefined,
       activationCode: undefined,
       overlay: false,
@@ -81,6 +78,7 @@ export default {
   },
   props: {
       factorCatalog: Object,
+      authenticatorName: String,
   },
   watch: {
     factorCatalog: {
@@ -124,7 +122,7 @@ export default {
       window.setTimeout(() => {
         this.progress = false;
       }, 700);
-    },    
+    }, 
     async enroll() {
       const options = {
         method: 'POST',
@@ -143,7 +141,7 @@ export default {
           if (self.factor._links.activate) {
             self.displayQRCode = true;
             self.enrollQR = res.data._embedded.activation._links.qrcode.href;
-          }          
+          }
         }
       }
       this.requestApi(options, handler);

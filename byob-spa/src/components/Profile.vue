@@ -308,10 +308,13 @@ export default {
               if (this.newPhoneNumber && this.newPhoneNumber.length > 0) {
                 if (
                   this.smsFactor &&
-                  this.substringLast10(this.newPhoneNumber) !=
+                  this.substringLast10(this.newPhoneNumber) ==
                     this.substringLast10(this.smsFactor.profile.phoneNumber)
-                ) 
-                this.updateMfa = true;
+                ) {
+                  this.updateMfa = false;
+                } else {
+                  this.updateMfa = true;
+                }
               }
             }
 

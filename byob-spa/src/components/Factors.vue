@@ -1,19 +1,20 @@
 <template>
   <v-card class="pa-4 ma-4">
     <h2>Your factors</h2>
-    <Verify
+    <TOTP
+      authenticatorName="Okta Verify"
       :factorCatalog="factorCatalog.verify"
       v-on:factor-updated="factorUpdated($event)"
-    ></Verify>
-    <!-- <VerifyPush></VerifyPush> -->
+    ></TOTP>
     <SMS
       :factorCatalog="factorCatalog.sms"
       v-on:factor-updated="factorUpdated($event)"
     ></SMS>
-    <GoogleAuthenticator
+    <TOTP
+      authenticatorName="Google Authenticator"
       :factorCatalog="factorCatalog.googleAuthenticator"
       v-on:factor-updated="factorUpdated($event)"
-    ></GoogleAuthenticator>
+    ></TOTP>
     <SecurityQuestion
       :factorCatalog="factorCatalog.securityQuestion"
       v-on:factor-updated="factorUpdated($event)"
@@ -23,23 +24,23 @@
 
 <script>
 import axios from "axios";
-import GoogleAuthenticator from "@/components/GoogleAuthenticator";
+import TOTP from "@/components/TOTP";
 import SMS from "@/components/SMS";
 import SecurityQuestion from "@/components/SecurityQuestion";
-import Verify from "@/components/Verify";
+// import Verify from "@/components/Verify";
 // import VerifyPush from "@/components/VerifyPush";
 
 export default {
   name: "factors",
   components: {
-    // VerifyPush,
-    Verify,
-    GoogleAuthenticator,
+    // VerifyPush, Verify,
+    TOTP,
     SMS,
     SecurityQuestion,
   },
   data() {
     return {
+      userInfo: undefined,
       factorCatalog: {
         googleAuthenticator: { catalog: undefined, factor: undefined },
         sms: { catalog: undefined, factor: undefined },
@@ -50,6 +51,7 @@ export default {
     };
   },
   async created() {
+    this.userInfo = this.$root.$children[0].userinfo;
     const accessToken = await this.$auth.getAccessToken();
     this.updateCatalog(accessToken);
     this.updateFactors(accessToken);
@@ -58,39 +60,25 @@ export default {
     //Retrieve the factors which a user is eligable to enroll
     async updateCatalog(accessToken) {
       try {
-        var url =
+        const catalogRes = await axios.get(
           this.$config.api +
-          "/api/v1/users/" +
-          this.$root.$children[0].userinfo.sub +
-          "/factors/catalog";
-        const catalogRes = await axios.get(url, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
-        catalogRes.data.forEach((catalogFactor) => {
-          if (
-            catalogFactor.factorType == Verify.factorType &&
-            catalogFactor.provider == Verify.provider
-          ) {
-            this.factorCatalog.verify.catalog = catalogFactor;
+            "/api/v1/users/" +
+            this.userInfo.sub +
+            "/factors/catalog",
+          {
+            headers: { Authorization: "Bearer " + accessToken },
           }
-          if (
-            catalogFactor.factorType == SMS.factorType &&
-            catalogFactor.provider == SMS.provider
-          ) {
-            this.factorCatalog.sms.catalog = catalogFactor;
-          }
-          if (
-            catalogFactor.factorType == GoogleAuthenticator.factorType &&
-            catalogFactor.provider == GoogleAuthenticator.provider
-          ) {
-            this.factorCatalog.googleAuthenticator.catalog = catalogFactor;
-          }
-          if (
-            catalogFactor.factorType == SecurityQuestion.factorType &&
-            catalogFactor.provider == SecurityQuestion.provider
-          ) {
-            this.factorCatalog.securityQuestion.catalog = catalogFactor;
-          }
+        );
+        console.log(catalogRes);
+        catalogRes.data.forEach((cf) => {
+          if (cf.factorType == "token:software:totp" && cf.provider == "OKTA")
+            this.factorCatalog.verify.catalog = cf;
+          if (cf.factorType == "sms" && cf.provider == "OKTA")
+            this.factorCatalog.sms.catalog = cf;
+          if (cf.factorType == "token:software:totp" && cf.provider == "GOOGLE")
+            this.factorCatalog.googleAuthenticator.catalog = cf;
+          if (cf.factorType == "question" && cf.provider == "OKTA")
+            this.factorCatalog.securityQuestion.catalog = cf;
         });
       } catch {
         // fail silently
@@ -99,39 +87,21 @@ export default {
     //Retrieve the factors which the user has presently enrolled
     async updateFactors(accessToken) {
       try {
-        var url =
-          this.$config.api +
-          "/api/v1/users/" +
-          this.$root.$children[0].userinfo.sub +
-          "/factors";
-        const enrolledRes = await axios.get(url, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
-        enrolledRes.data.forEach((factor) => {
-          if (
-            factor.factorType == Verify.factorType &&
-            factor.provider == Verify.provider
-          ) {
-            this.factorCatalog.verify.factor = factor;
+        const enrolledRes = await axios.get(
+          this.$config.api + "/api/v1/users/" + this.userInfo.sub + "/factors",
+          {
+            headers: { Authorization: "Bearer " + accessToken },
           }
-          if (
-            factor.factorType == GoogleAuthenticator.factorType &&
-            factor.provider == GoogleAuthenticator.provider
-          ) {
-            this.factorCatalog.googleAuthenticator.factor = factor;
-          }
-          if (
-            factor.factorType == SMS.factorType &&
-            factor.provider == SMS.provider
-          ) {
-            this.factorCatalog.sms.factor = factor;
-          }
-          if (
-            factor.factorType == SecurityQuestion.factorType &&
-            factor.provider == SecurityQuestion.provider
-          ) {
-            this.factorCatalog.securityQuestion.factor = factor;
-          }
+        );
+        enrolledRes.data.forEach((ff) => {
+          if (ff.factorType == "token:software:totp" && ff.provider == "OKTA")
+            this.factorCatalog.verify.factor = ff;
+          if (ff.factorType == "token:software:totp" && ff.provider == "GOOGLE")
+            this.factorCatalog.googleAuthenticator.factor = ff;
+          if (ff.factorType == "sms" && ff.provider == "OKTA")
+            this.factorCatalog.sms.factor = ff;
+          if (ff.factorType == "question" && ff.provider == "OKTA")
+            this.factorCatalog.securityQuestion.factor = ff;
         });
       } catch {
         // fail silently
@@ -139,8 +109,7 @@ export default {
     },
     updateSmsFactor(factor) {
       this.factorCatalog.sms.factor = factor;
-      if (factor)
-        this.factorCatalog.sms.catalog.status = factor.status;
+      if (factor) this.factorCatalog.sms.catalog.status = factor.status;
     },
     async factorUpdated(target) {
       const accessToken = await this.$auth.getAccessToken();

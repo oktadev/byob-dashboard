@@ -114,17 +114,13 @@
 import axios from "axios";
 
 export default {
-  factorType: "sms",
-  provider: "OKTA",
   name: "sms",
   data() {
     return {
-      factorType: "sms",
-      provider: "OKTA",
+      status: undefined,
       factor: undefined,
       overlay: false,
       overlayMessage: undefined,
-      status: undefined,
       showPasscodeField: false,
       phoneNumber: undefined,
       activationCode: undefined,
@@ -195,8 +191,8 @@ export default {
           this.$root.$children[0].userinfo.sub +
           '/factors?updatePhone=true',
         data: {
-          factorType: this.factorType,
-          provider: this.provider,
+          factorType: this.factorCatalog.catalog.factorType,
+          provider: this.factorCatalog.catalog.provider,
           profile: { phoneNumber: this.phoneNumber }
         }
       }
