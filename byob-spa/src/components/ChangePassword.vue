@@ -1,5 +1,5 @@
 <template>
-    <v-col cols="4" class="mx-8">
+    <v-card class="pa-4 ma-4">
         <h2>Your Password</h2>
         <v-form
             ref="form"
@@ -42,7 +42,7 @@
                         class="password-rule">Not a common password</v-list-item-subtitle>        
                     </v-list-item-content>
                     </v-list-item>
-             </v-card>
+            </v-card>
             <v-text-field
                 v-model="newPassword"
                 label="New Password"
@@ -64,7 +64,7 @@
                 >
             </v-text-field>
             <v-row>
-                <v-btn small outlined
+                <v-btn small outlined class="ml-3"
                     @click="save"
                     :disabled="!valid"
                     :color="valid ? 'green' : null"
@@ -90,7 +90,11 @@
                 <v-icon v-if="error">mdi-close</v-icon>
             </v-btn>
         </v-overlay>
-    </v-col>        
+        <br/>
+        <hr/>
+        <br/>
+        <PasswordRecoveryFactors/>
+    </v-card>
 </template>
 
 <style scoped>
@@ -101,6 +105,7 @@
 
 <script>
 import axios from 'axios'
+import PasswordRecoveryFactors from '@/components/PasswordRecoveryFactors'
 
 export default {
     name: 'change-password',
@@ -151,6 +156,9 @@ export default {
             overlayMessage: undefined,
             error: false
         }
+    },
+    components: {
+        PasswordRecoveryFactors
     },
     created(){
         this.getComplexity()

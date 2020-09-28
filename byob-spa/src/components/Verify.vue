@@ -1,169 +1,190 @@
 <template>
-    <v-col cols="4" class="mx-8">
-        <h2>Okta Verify</h2>
-        <div v-if="status == 'ACTIVE'">
-            You have enrolled Okta Verify.
-            <v-form>
-                <v-btn small outlined @click="reset">
-                    Remove
-                </v-btn>
-            </v-form>
-        </div>
-        <div v-else>
-            <div v-if="status == 'NOT_SETUP'">
-                Available for enrollment
-                <v-form>
-                    <v-btn small outlined @click="enroll">
-                        Begin
-                    </v-btn>
+  <div class="py-2 caption">
+    <v-card flat outlined class="pa-2">
+    <h4>Okta Verify</h4>
+    <div v-if="status == 'ACTIVE'">
+      <p class="success--text">Okta Verify is enrolled.</p>
+      <v-btn 
+        small outlined 
+        @click="reset"
+        :disabled="progress"
+      >Remove</v-btn>
+    </div>
+    <div v-else>
+      <div v-if="status == 'NOT_SETUP'">
+        <p>Available for enrollment</p>
+        <v-btn 
+          small outlined 
+          @click="enroll"
+          :disabled="progress"
+        >Setup</v-btn>
+        <v-dialog v-model="displayQRCode" width="300">
+            <v-card class="pt-4 px-0 pb-1">
+              <div class="px-4">
+                <p>Please scan the QR code below with Okta Verify</p>
+                <div>
+                    <img :src="enrollQR" />
+                </div>
+                <v-form ref="activationform">
+                    Then enter a code from your token
+                    <v-text-field
+                        v-model="activationCode"
+                        label="Activation Code"
+                        required
+                        :disabled="progress"
+                    ></v-text-field>
+                    <v-btn
+                      small outlined
+                      @click="activate"
+                      :disabled="progress || !activationCode || activationCode.length != 6"
+                    >Activate</v-btn>
                 </v-form>
-            </div>
-            <div v-else>
-                <div v-if="status == 'PENDING_ACTIVATION'">
-                    Please scan the QR code below with Okta Verify
-                    <div>
-                        <img :src=enrollQR />
-                    </div>
-                    <v-form ref="activationform">
-                        Then enter a code from your token
-                        <v-text-field
-                            v-model="activationCode"
-                            label="Activation Code"
-                            required
-                            >
-                        </v-text-field>
-                        <v-btn small outlined @click="activate">
-                            Activate
-                        </v-btn>
-                    </v-form>
-                </div>
-                <div v-else>
-                    Enrollment is not available at this time.
-                </div>
-            </div>
-        </div>   
-        <v-overlay :value="overlay">
-                <v-btn>
-                    {{overlayMessage}}
-                </v-btn>
-            </v-overlay> 
-    </v-col>
+              </div>
+              <v-progress-linear 
+                class="mt-2" 
+                height="2" 
+                indeterminate 
+                :active="progress"
+              ></v-progress-linear>
+            </v-card>
+        </v-dialog>
+      </div>
+      <div v-else>
+        <p class="grey--text">Enrollment is not available at this time.</p>
+      </div>
+    </div>
+    <v-overlay :value="overlay">
+      <v-btn>
+        {{ overlayMessage }}
+      </v-btn>
+    </v-overlay>
+    </v-card>
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
-    factorType: "token:software:totp",
-    provider: "OKTA",
-    name: 'factors',
-    data () {
-        return {
-            factorType: "token:software:totp",
-            provider: "OKTA",
-            factorId: undefined,
-            enrollment: undefined,
-            status: undefined,
-            vendorName: undefined,
-            enrollQR: undefined,
-            activationCode: undefined,
-            overlay: false,
-            overlayMessage: undefined,
+  factorType: "token:software:totp",
+  provider: "OKTA",
+  name: "verify",
+  data() {
+    return {
+      factorType: "token:software:totp",
+      provider: "OKTA",
+      status: undefined,
+      factor: false,
+      enrollQR: undefined,
+      activationCode: undefined,
+      overlay: false,
+      overlayMessage: undefined,
+      displayQRCode: false,
+      progress: false
+    };
+  },
+  props: {
+      factorCatalog: Object,
+  },
+  watch: {
+    factorCatalog: {
+      deep: true,
+      handler() {
+        if (this.factorCatalog.catalog) {
+          this.status = this.factorCatalog.catalog.status;
         }
-    },    
-    created(){
-        this.updateCatalog()
-        this.updateFactor()
+        this.factor = this.factorCatalog.factor;
+      }
+    }
+  },
+  methods: {
+    emitUpdate() {
+      this.$emit("factor-updated", {
+        catalog: this.factorCatalog.catalog,
+        factor: this.factor,
+      });
     },
-    methods: {
-        updateCatalog(){
-            if(this.$parent.catalog && this.$parent.catalog.googleAuthenticator){
-                this.enrollment = this.$parent.catalog.googleAuthenticator.enrollment
-                this.status = this.$parent.catalog.googleAuthenticator.status
-                this.vendorName = this.$parent.catalog.googleAuthenticator.vendorName
-            }
-        },
-        updateFactor(){
-            if(this.$parent.factors && this.$parent.factors.googleAuthenticator){
-                this.factorId = this.$parent.factors.googleAuthenticator.id
-            }
-        },
-        async enroll() {
-            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors'
-            const payload = {
-                factorType: this.factorType,
-                provider: this.provider 
-            }
-            const accessToken = await this.$auth.getAccessToken()
-            this.overlayMessage = undefined  
-            try {
-                const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
-                if (res.status == 200) {
-                    window.setTimeout(()=>{
-                        this.overlay=false
-                    }, 600)
-                    this.status = res.data.status
-                    this.factorId = res.data.id
-                    this.enrollQR = res.data._embedded.activation._links.qrcode.href
-                }
-            } catch(err) {
-                this.overlay=true
-                try {
-                    this.overlayMessage = err.response.data.errorCauses[0].errorSummary
-                } catch(e) {
-                    //lazily handle unexpected responses
-                    this.overlayMessage = 'invalid request'
-                }
-                window.setTimeout(()=>{
-                    this.overlay=false
-                }, 1000)
-            }
-        },
-        async activate() {
-            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors/'+this.factorId+'/lifecycle/activate'
-            const payload = {
-                passCode: this.activationCode
-            }
-            const accessToken = await this.$auth.getAccessToken()
-            try {
-                const res = await axios.post(url, payload, {headers: {Authorization: 'Bearer ' + accessToken}})
-                this.status = res.data.status
-                this.factorid = res.data.id
-                this.$refs.activationform.reset()
-            } catch(err) {
-                this.overlay=true
-                try {
-                    this.overlayMessage = err.response.data.errorCauses[0].errorSummary
-                } catch(e) {
-                    // lazily catch unrecognized responses
-                    this.overlayMessage = 'Unable to process request. Please re-try'
-                }
-                window.setTimeout(()=>{
-                    this.overlay=false
-                }, 1000)
-            }
-        },
-        async reset() {
-            const url = this.$config.api + '/api/v1/users/' + this.$root.$children[0].userinfo.sub + '/factors/'+this.factorId
-            const accessToken = await this.$auth.getAccessToken()
-            this.overlayMessage = undefined
-            try {
-                await axios.delete(url, {headers: {Authorization: 'Bearer ' + accessToken}})
-            } catch(err) {
-                this.overlay=true
-                try {
-                    this.overlayMessage = err.response.data.errorCauses[0].errorSummary
-                } catch(e) {
-                    //lazily handle unexpected responses
-                    this.overlayMessage = 'invalid request'
-                }
-                window.setTimeout(()=>{
-                    this.overlay=false
-                }, 1000)
-            }
-            this.$parent.updateCatalog()
-            this.$parent.updateFactors()   
+    async requestApi(options, handler) {
+      this.progress = true;
+      this.overlay = false;
+      this.overlayMessage = undefined;
+      try {
+        const accessToken = await this.$auth.getAccessToken();
+        options.headers = { Authorization: "Bearer " + accessToken };
+        const res = await axios(options);
+        handler(this, res);
+      } catch (err) {
+        this.overlay = true;
+        try {
+          this.overlayMessage = err.response.data.errorCauses[0].errorSummary;
+        } catch (e) {
+          //lazily handle unexpected responses
+          this.overlayMessage = "invalid request";
         }
-    }    
-}
+        window.setTimeout(() => {
+          this.overlay = false;
+        }, 2500);
+      }
+      window.setTimeout(() => {
+        this.progress = false;
+      }, 700);
+    },    
+    async enroll() {
+      const options = {
+        method: 'POST',
+        url: this.$config.api +
+          '/api/v1/users/' +
+          this.$root.$children[0].userinfo.sub +
+          '/factors',
+        data: {
+          factorType: this.factorType,
+          provider: this.provider
+        }
+      }
+      const handler = function(self, res) {
+        if (res.status == 200) {
+          self.factor = res.data;
+          if (self.factor._links.activate) self.displayQRCode = true;
+          self.enrollQR = res.data._embedded.activation._links.qrcode.href;
+        }
+      }
+      this.requestApi(options, handler);
+    },
+    async activate() {
+      const options = {
+        method: 'POST',
+        url: this.$config.api + '/api/v1/' + this.factor._links.activate.href.split('/api/v1/')[1],
+        data: {
+          passCode: this.activationCode
+        }
+      }
+      const handler = function(self, res) {
+        if (res.status == 200) {
+          self.factor = res.data;
+          self.displayQRCode = false;
+          self.$refs.activationform.reset();
+          self.emitUpdate();
+        }
+      }
+      this.requestApi(options, handler);
+    },
+    async reset() {
+      const options = {
+        method: 'DELETE',
+        url: this.$config.api +
+          '/api/v1/users/' +
+          this.$root.$children[0].userinfo.sub +
+          '/factors/' +
+          this.factor.id
+      }
+      const handler = function(self, res) {
+        if (res.status == 204) {
+          self.factor = undefined;
+          self.emitUpdate();
+        }
+      }
+      this.requestApi(options, handler);
+    }
+  },
+};
 </script>
