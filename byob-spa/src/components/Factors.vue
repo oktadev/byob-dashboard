@@ -3,7 +3,8 @@
     <h2>Your factors</h2>
     <TOTP
       authenticatorName="Okta Verify"
-      :factorCatalog="factorCatalog.verify"
+      :push="factorCatalog.verifyPush.catalog ? true : false"
+      :factorCatalog="factorCatalog.verifyPush.catalog ? factorCatalog.verifyPush : factorCatalog.verify"
       v-on:factor-updated="factorUpdated($event)"
     ></TOTP>
     <SMS
@@ -71,6 +72,8 @@ export default {
         );
         console.log(catalogRes);
         catalogRes.data.forEach((cf) => {
+          if (cf.factorType == "push" && cf.provider == "OKTA")
+            this.factorCatalog.verifyPush.catalog = cf;
           if (cf.factorType == "token:software:totp" && cf.provider == "OKTA")
             this.factorCatalog.verify.catalog = cf;
           if (cf.factorType == "sms" && cf.provider == "OKTA")
@@ -93,7 +96,10 @@ export default {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
+        console.log(enrolledRes);
         enrolledRes.data.forEach((ff) => {
+          if (ff.factorType == "push" && ff.provider == "OKTA")
+            this.factorCatalog.verifyPush.factor = ff;
           if (ff.factorType == "token:software:totp" && ff.provider == "OKTA")
             this.factorCatalog.verify.factor = ff;
           if (ff.factorType == "token:software:totp" && ff.provider == "GOOGLE")
