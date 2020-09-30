@@ -81,6 +81,14 @@ resource "okta_auth_server_claim" "okta-byob-groups-id" {
   claim_type        = "IDENTITY"
 }
 
+resource "okta_auth_server_claim" "okta-byob-mobile-phone" {
+  auth_server_id    = okta_auth_server.okta-byob.id
+  name              = "MobilePhone"
+  value             = "user.mobilePhone"
+  value_type        = "EXPRESSION"
+  claim_type        = "IDENTITY"
+}
+
 # Create policy in custom authorization server
 resource "okta_auth_server_policy" "okta-byob" {
   auth_server_id   = okta_auth_server.okta-byob.id
