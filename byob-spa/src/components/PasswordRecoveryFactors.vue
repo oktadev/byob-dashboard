@@ -5,44 +5,88 @@
   <div v-if="questionEnabled">
     <h4>Password Recovery</h4>
     <div v-if="questionStatus == 'set'">
-      <p class="caption">
-        You will be asked to answer the following question to reset your
-        password:
-      </p>
-      <p class="Subtitle2">{{ question }}</p>
-      <v-form>
-        <v-btn small outlined @click="change"> Change </v-btn>
-      </v-form>
+      <p class="caption">Your current recovery question is:</p>
+      <p class="">{{ question }}</p>
+      <v-btn small outlined @click="change"> Change </v-btn>
     </div>
-    <div v-if="questionStatus == 'change'">
-      <v-form>
-        <v-text-field v-model="changeQuestion" label="Question" required>
-        </v-text-field>
+
+    <v-form ref="changeForm" v-model="valid">
+      <v-card v-if="questionStatus == 'change'" flat class="py-2">
+        <p class="caption">
+          Type a new question and answer. Then click <strong>CHANGE</strong>
+        </p>
+        <v-text-field
+          v-model="changeQuestion"
+          label="Question"
+          required
+          filled
+          class="py-0 my-0"
+        ></v-text-field>
         <v-text-field
           v-model="changeAnswer"
           label="Answer"
           required
+          filled
+          class="py-0 my-n4"
         ></v-text-field>
-        <v-btn small outlined @click="beginChange" :disabled="!changeAnswer || changeAnswer.length <= 0"> Change</v-btn>
-        <v-btn small outlined class="ml-2" @click="cancel">Cancel</v-btn>
-      </v-form>
-    </div>
-    <div v-if="questionStatus == 'verify'">
-      <p>Please confirm your password to make this change.</p>
-      <v-text-field
-        v-model="password"
-        label="Password"
-        required
-        type="password"
-      ></v-text-field>
-      <v-btn small outlined @click="submitChange"> Change </v-btn>
-      <v-btn small outlined @click="cancel"> Cancel </v-btn>
-    </div>
-    <v-overlay :value="overlay">
-      <v-btn>
-        {{ overlayMessage }}
-      </v-btn>
-    </v-overlay>
+        <v-card-actions class="ml-n2">
+          <v-btn
+            small
+            outlined
+            @click="beginChange"
+            :disabled="
+              !changeAnswer ||
+              changeAnswer.length <= 0 ||
+              !changeQuestion ||
+              changeQuestion.length <= 0
+            "
+          >
+            Change</v-btn
+          >
+          <v-btn small outlined class="ml-2" @click="cancel">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-dialog width="300" v-model="dialog" persistent>
+        <v-card flat class="pt-6 pb-1">
+          <div class="px-4">
+            <p class="caption">
+              Please confirm your password to make this change.
+            </p>
+            <v-text-field
+              v-model="password"
+              label="Password"
+              required
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="showPassword = !showPassword"
+            ></v-text-field>
+            <v-card-actions class="ml-n2">
+              <v-btn
+                small
+                outlined
+                @click="submitChange"
+                :disabled="updating || !password || password.length <= 0"
+              >
+                Change
+              </v-btn>
+              <v-btn small outlined @click="cancel" :disabled="updating">
+                Cancel
+              </v-btn>
+            </v-card-actions>
+          </div>
+          <v-progress-linear
+            height="2"
+            indeterminate
+            :active="updating"
+          ></v-progress-linear>
+        </v-card>
+        <v-overlay :value="overlay">
+          <v-btn>
+            {{ overlayMessage }}
+          </v-btn>
+        </v-overlay>
+      </v-dialog>
+    </v-form>
   </div>
 </template>
 
@@ -52,6 +96,7 @@ export default {
   name: "recoverPasswordFactors",
   data() {
     return {
+      user: undefined,
       overlay: false,
       overlayMessage: undefined,
       appUserInfo: undefined,
@@ -61,6 +106,10 @@ export default {
       changeQuestion: undefined,
       changeAnswer: undefined,
       password: undefined,
+      valid: true,
+      showPassword: false,
+      dialog: false,
+      updating: false,
     };
   },
   created() {
@@ -68,13 +117,15 @@ export default {
   },
   methods: {
     async init() {
-      var user = await this.$auth.getUser();
-      var accessToken = await this.$auth.getAccessToken();
+      this.user = this.$root.$children[0].userinfo;
+      const accessToken = await this.$auth.getAccessToken();
       try {
-        var url = this.$config.api + "/api/v1/users/" + user.sub;
-        const profileRes = await axios.get(url, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
+        const profileRes = await axios.get(
+          this.$config.api + "/api/v1/users/" + this.user.sub,
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
         //this is set first according to policy on sign in
         //if this value is not in the users profile we shouldn't show
         if (profileRes.data.credentials.recovery_question) {
@@ -85,54 +136,45 @@ export default {
         } else {
           this.questionEnabled = false;
         }
-      } catch (err) {
-        console.log(err);
-        try {
-          this.overlayMessage = err.response.data.errorCauses[0].errorSummary;
-        } catch (e) {
-          //lazily handle unexpected responses
-          this.overlayMessage = "invalid request";
-        }
-        this.error = true;
-        this.saved = true;
+      } catch {
+        //do nothing
       }
     },
 
     change() {
-      (this.questionStatus = "change"), (this.changeQuestion = this.question);
+      this.questionStatus = "change";
+      this.changeQuestion = this.question;
     },
 
     beginChange() {
-      this.questionStatus = "verify";
+      this.dialog = true;
     },
 
     async submitChange() {
-      var user = await this.$auth.getUser();
-      var accessToken = await this.$auth.getAccessToken();
-
-      const url =
-        this.$config.api +
-        "/api/v1/users/" +
-        user.sub +
-        "/credentials/change_recovery_question";
-      const payload = {
-        password: { value: this.password },
-        recovery_question: {
-          question: this.changeQuestion,
-          answer: this.changeAnswer,
-        },
-      };
+      this.updating = true;
+      this.showPassword = false;
+      const accessToken = await this.$auth.getAccessToken();
       try {
-        await axios.post(url, payload, {
-          headers: { Authorization: "Bearer " + accessToken },
-        });
+        await axios.post(
+          this.$config.api +
+            "/api/v1/users/" +
+            this.user.sub +
+            "/credentials/change_recovery_question",
+          {
+            password: { value: this.password },
+            recovery_question: {
+              question: this.changeQuestion,
+              answer: this.changeAnswer,
+            },
+          },
+          {
+            headers: { Authorization: "Bearer " + accessToken },
+          }
+        );
         this.question = this.changeQuestion;
-        this.changeQuestion = undefined;
-        this.changeAnswer = undefined;
-        this.password = undefined;
+        this.$refs.changeForm.reset();
         this.questionStatus = "set";
       } catch (err) {
-        console.log(err);
         this.overlay = true;
         try {
           this.overlayMessage = err.response.data.errorCauses[0].errorSummary;
@@ -142,15 +184,16 @@ export default {
         }
         window.setTimeout(() => {
           this.overlay = false;
-        }, 2000);
+        }, 2500);
       }
+      this.updating = false;
+      this.cancel();
     },
 
     cancel() {
-      this.changeQuestion = undefined;
-      this.changeAnswer = undefined;
-      this.password = undefined;
+      this.$refs.changeForm.reset();
       this.questionStatus = "set";
+      this.dialog = false;
     },
   },
 };

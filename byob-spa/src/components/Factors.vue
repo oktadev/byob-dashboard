@@ -1,21 +1,21 @@
 <template>
   <v-card class="pa-4 ma-4">
     <h2>Your factors</h2>
-    <TOTP
+    <TotpPush
       authenticatorName="Okta Verify"
       :push="factorCatalog.verifyPush.catalog ? true : false"
       :factorCatalog="factorCatalog.verifyPush.catalog ? factorCatalog.verifyPush : factorCatalog.verify"
       v-on:factor-updated="factorUpdated($event)"
-    ></TOTP>
+    ></TotpPush>
     <SMS
       :factorCatalog="factorCatalog.sms"
       v-on:factor-updated="factorUpdated($event)"
     ></SMS>
-    <TOTP
+    <TotpPush
       authenticatorName="Google Authenticator"
       :factorCatalog="factorCatalog.googleAuthenticator"
       v-on:factor-updated="factorUpdated($event)"
-    ></TOTP>
+    ></TotpPush>
     <SecurityQuestion
       :factorCatalog="factorCatalog.securityQuestion"
       v-on:factor-updated="factorUpdated($event)"
@@ -25,17 +25,14 @@
 
 <script>
 import axios from "axios";
-import TOTP from "@/components/TOTP";
+import TotpPush from "@/components/TotpPush";
 import SMS from "@/components/SMS";
 import SecurityQuestion from "@/components/SecurityQuestion";
-// import Verify from "@/components/Verify";
-// import VerifyPush from "@/components/VerifyPush";
 
 export default {
   name: "factors",
   components: {
-    // VerifyPush, Verify,
-    TOTP,
+    TotpPush,
     SMS,
     SecurityQuestion,
   },
@@ -70,7 +67,6 @@ export default {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
-        console.log(catalogRes);
         catalogRes.data.forEach((cf) => {
           if (cf.factorType == "push" && cf.provider == "OKTA")
             this.factorCatalog.verifyPush.catalog = cf;
@@ -96,7 +92,6 @@ export default {
             headers: { Authorization: "Bearer " + accessToken },
           }
         );
-        console.log(enrolledRes);
         enrolledRes.data.forEach((ff) => {
           if (ff.factorType == "push" && ff.provider == "OKTA")
             this.factorCatalog.verifyPush.factor = ff;

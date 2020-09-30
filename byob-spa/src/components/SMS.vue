@@ -27,6 +27,11 @@
             :disabled="progress"
           >Setup</v-btn>
           <v-dialog v-model="setupModal" width="300" :persistent="persistent">
+            <v-overlay :value="overlay">
+              <v-btn>
+                {{ overlayMessage }}
+              </v-btn>
+            </v-overlay>
             <v-card class="pt-4 pb-1 px-0">
               <div class="px-4">
                 <v-form ref="enrollform">
@@ -101,7 +106,7 @@
           <p class="grey--text">Enrollment is not available at this time.</p>
         </div>
       </div>
-      <v-overlay :value="overlay">
+      <v-overlay :value="!setupModal && overlay">
         <v-btn>
           {{ overlayMessage }}
         </v-btn>

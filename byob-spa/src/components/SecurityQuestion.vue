@@ -12,6 +12,11 @@
         <div v-if="status == 'NOT_SETUP'">
           <div v-if="questions">
             <v-dialog v-model="enrolling" width="500" persistent>
+              <v-overlay :value="overlay">
+                <v-btn>
+                  {{ overlayMessage }}
+                </v-btn>
+              </v-overlay>
               <v-card class="pt-4 px-0 pb-1">
                 <div class="px-4">
                   <v-form ref="questionform">
@@ -55,7 +60,7 @@
           Enrollment is not available at this time.
         </div>
       </div>
-      <v-overlay :value="overlay">
+      <v-overlay :value="!enrolling && overlay">
         <v-btn>
           {{ overlayMessage }}
         </v-btn>

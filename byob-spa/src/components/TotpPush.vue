@@ -15,6 +15,11 @@
             >Setup</v-btn
           >
           <v-dialog v-model="displayQRCode" width="300" persistent>
+            <v-overlay :value="overlay">
+              <v-btn>
+                {{ overlayMessage }}
+              </v-btn>
+            </v-overlay>
             <v-card class="pt-4 px-0 pb-1">
               <div class="px-4">
                 <div class="text-body-2">
@@ -87,12 +92,12 @@
           <p class="grey--text">Enrollment is not available at this time.</p>
         </div>
       </div>
-      <v-overlay :value="overlay">
-        <v-btn>
-          {{ overlayMessage }}
-        </v-btn>
-      </v-overlay>
     </v-card>
+    <v-overlay :value="!displayQRCode && overlay">
+      <v-btn>
+        {{ overlayMessage }}
+      </v-btn>
+    </v-overlay>
   </div>
 </template>
 
@@ -155,6 +160,7 @@ export default {
           this.overlayMessage = "invalid request";
         }
         window.setTimeout(() => {
+          this.progress = false;
           this.overlay = false;
         }, 2500);
       }

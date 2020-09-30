@@ -12,10 +12,10 @@
       </v-tab-item>
       <v-tab-item key="security">
         <v-row>
-          <v-col cols="6" lg="3" xl="2">
+          <v-col cols="6" lg="4" xl="4">
             <ChangePassword />
           </v-col>
-          <v-col cols="6" lg="3" xl="2">
+          <v-col cols="6" lg="4" xl="4">
             <Factors
               ref="factors"
               v-on:factor-updated="updateProfileFactor()"
