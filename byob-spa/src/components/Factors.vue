@@ -20,6 +20,10 @@
       :factorCatalog="factorCatalog.securityQuestion"
       v-on:factor-updated="factorUpdated($event)"
     ></SecurityQuestion>
+    <WebAuthn
+      :factorCatalog="factorCatalog.webAuthn"
+      v-on:factor-updated="factorUpdated($event)"
+    ></WebAuthn>
   </v-card>
 </template>
 
@@ -28,6 +32,7 @@ import axios from "axios";
 import TotpPush from "@/components/TotpPush";
 import SMS from "@/components/SMS";
 import SecurityQuestion from "@/components/SecurityQuestion";
+import WebAuthn from "@/components/WebAuthn";
 
 export default {
   name: "factors",
@@ -35,6 +40,7 @@ export default {
     TotpPush,
     SMS,
     SecurityQuestion,
+    WebAuthn,
   },
   data() {
     return {
@@ -45,6 +51,7 @@ export default {
         securityQuestion: { catalog: undefined, factor: undefined },
         verify: { catalog: undefined, factor: undefined },
         verifyPush: { catalog: undefined, factor: undefined },
+        webAuthn: { catalog: undefined, factor: undefined },
       },
     };
   },
@@ -78,6 +85,9 @@ export default {
             this.factorCatalog.googleAuthenticator.catalog = cf;
           if (cf.factorType == "question" && cf.provider == "OKTA")
             this.factorCatalog.securityQuestion.catalog = cf;
+          if (cf.factorType == "webauthn" && cf.provider == "FIDO")
+            this.factorCatalog.webAuthn.catalog = cf;
+
         });
       } catch {
         // fail silently
@@ -103,6 +113,9 @@ export default {
             this.factorCatalog.sms.factor = ff;
           if (ff.factorType == "question" && ff.provider == "OKTA")
             this.factorCatalog.securityQuestion.factor = ff;
+          if (ff.factorType == "webauthn" && ff.provider == "FIDO")
+            this.factorCatalog.webAuthn.factor = ff;
+
         });
       } catch {
         // fail silently
