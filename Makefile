@@ -68,7 +68,7 @@ destroyOkta: destroyOktaPlan
 .PHONY: createEnvJson
 createEnvJson:
 	@cd ${TERRAFORM} && \
-	terraform output api_env_json > ../${API_DIR}/.env.json
+  terraform output api_env_json | sed -e 's/<<EOT/{/g' | sed -e 's/EOT/}/g' > ../${API_DIR}/.env.json
 
 .PHONY: setupApi
 setupApi: createEnvJson
