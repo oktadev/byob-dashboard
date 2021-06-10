@@ -38,7 +38,7 @@ export default {
         },
         features: {
           // passwordlessAuth: true,
-          // webauthn: true,
+          webauthn: true,
           multiOptionalFactorEnroll: true,
           idpDiscovery: true
         },
