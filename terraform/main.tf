@@ -12,7 +12,7 @@ terraform {
   required_providers {
     okta = {
       source  = "oktadeveloper/okta"
-      version = "~> 3.0"
+      version = "3.10.1"
     }
   }  
 }
@@ -22,7 +22,6 @@ provider "okta" {
   org_name  = var.org_name
   api_token = var.api_token
   base_url  = var.base_url
-  version   = "~> 3.0"
 }
 
 # BYOB Users - Everyone 

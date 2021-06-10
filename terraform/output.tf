@@ -1,13 +1,13 @@
 # This is the aws CLI command that must be run
 output "api_env_json" {
-  value = <<EOF
-  {
-  "AWS_PROFILE": "${var.aws_profile}",
-  "AWS_REGION": "${var.aws_region}",
-  "ENVIRONMENT": "${var.environment}",
-  "AWS_SSM_PREFIX": "${var.aws_ssm_prefix}"
-  }
-EOF
+  value = join("\n",
+      [
+      "\"AWS_PROFILE\": \"${var.aws_profile}\",",
+      "\"AWS_REGION\": \"${var.aws_region}\",",
+      "\"ENVIRONMENT\": \"${var.environment}\",",
+      "\"AWS_SSM_PREFIX\": \"${var.aws_ssm_prefix}\"",
+      ]
+    )
 }
 
 output "vue_env_dev" {
